@@ -3,6 +3,8 @@ package com.solovev.model;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -31,6 +33,7 @@ public class Card {
     @NonNull
     @ManyToOne(optional = false)
     @JoinColumn(name = "category_id",nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Category category;
 
     @NonNull
