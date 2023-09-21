@@ -1,10 +1,10 @@
 package com.solovev.model;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents category for user, one user can have multiple categories
@@ -19,13 +19,18 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "name", nullable = false)
     @NonNull
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "user_id", nullable = false)
     @NonNull
-    private long userId;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @OneToMany(mappedBy = "category",cascade = CascadeType.ALL,orphanRemoval = true)
+    private final List<Card> cards = new ArrayList<>();
 
 }

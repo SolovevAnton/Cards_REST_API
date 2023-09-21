@@ -29,10 +29,12 @@ public class Card {
     private String answer;
 
     @NonNull
-    @Column(name = "category_id",nullable = false)
-    private long categoryId;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "category_id",nullable = false)
+    private Category category;
 
     @NonNull
     @Column(name = "creation_date",nullable = false)
-    private final LocalDate creationDate;
+    private final LocalDate creationDate = LocalDate.now();
+
 }
