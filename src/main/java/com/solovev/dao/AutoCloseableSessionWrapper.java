@@ -7,14 +7,9 @@ import org.hibernate.Transaction;
 import java.util.function.Function;
 
 public class AutoCloseableSessionWrapper implements AutoCloseable {
-    private final Session session;
-
-    public AutoCloseableSessionWrapper() {
-        this.session = SessionFactorySingleton.getInstance().openSession();
-    }
-
-    public Session getSession() {
-        return session;
+    private final Session SESSION = SessionFactorySingleton.getInstance().openSession();;
+    public Session getSESSION() {
+        return SESSION;
     }
 
     /**
@@ -25,9 +20,9 @@ public class AutoCloseableSessionWrapper implements AutoCloseable {
      * @param <U> result of function execution
      */
     public <U> U beginAndCommitTransaction(Function<Session,U> methodToExecute){
-        Transaction transaction = session.beginTransaction();
+        Transaction transaction = SESSION.beginTransaction();
         try {
-            U result = methodToExecute.apply(session);
+            U result = methodToExecute.apply(SESSION);
             transaction.commit();
             return result;
         } catch (Exception e){
@@ -38,8 +33,8 @@ public class AutoCloseableSessionWrapper implements AutoCloseable {
 
     @Override
     public void close() {
-        if(session != null && session.isOpen()){
-            session.close();
+        if(SESSION.isOpen()){
+            SESSION.close();
         }
     }
 }

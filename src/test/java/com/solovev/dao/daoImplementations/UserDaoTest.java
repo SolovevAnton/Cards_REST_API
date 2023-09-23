@@ -34,6 +34,15 @@ public class UserDaoTest {
         assertEquals(Optional.empty(),userDAO.get(0));
         assertEquals(Optional.empty(),userDAO.get(4));
     }
+    @Test
+    public void getAll() throws SQLException {
+        DAO<User> userDAO = new UserDao();
+        assertEquals(USERS,userDAO.get());
+
+        clearTable();
+
+        assertEquals(List.of(),userDAO.get());
+    }
 
     @BeforeEach
     public void setUp() throws SQLException {
@@ -57,6 +66,9 @@ public class UserDaoTest {
 
     @AfterEach
     public void tearDown() throws SQLException {
+        clearTable();
+    }
+    private static void clearTable() throws SQLException {
         String sqlDelete = "DELETE FROM " + USERS_TABLE_NAME;
         executeStatement(sqlDelete);
     }

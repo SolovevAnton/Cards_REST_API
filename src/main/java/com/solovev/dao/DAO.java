@@ -1,5 +1,6 @@
 package com.solovev.dao;
 
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -13,6 +14,12 @@ public interface DAO<T> {
      * @return object if object with this id exists in DB empty optional otherwise
      */
     Optional<T> get(long id);
+
+    /**
+     *
+     * @return all rows in the table ampty collection if nothing was found
+     */
+    Collection<T> get();
     /**
      * Adds elem in DB
      * @param elem to add

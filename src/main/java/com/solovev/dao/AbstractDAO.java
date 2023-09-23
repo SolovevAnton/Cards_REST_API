@@ -3,7 +3,8 @@ package com.solovev.dao;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
 
-import java.util.Objects;
+import javax.persistence.criteria.CriteriaQuery;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -12,25 +13,39 @@ import java.util.function.Function;
  * DB is chosen based on the SessionFactorySingleton parameters
  */
 @RequiredArgsConstructor
-public abstract class AbstractDAO<T> implements DAO<T>{
+public abstract class AbstractDAO<T> implements DAO<T> {
 
     //creation of factory object
     static {
         SessionFactorySingleton.getInstance();
     }
+
     private final Class<T> self;
 
     @Override
     public Optional<T> get(long id) {
         //method itself
-        Function<Session,T> get = session -> session.get(self,id);
+        Function<Session, T> get = session -> session.get(self, id);
         Optional<T> result;
-        try(AutoCloseableSessionWrapper session = new AutoCloseableSessionWrapper()){
+
+        try (AutoCloseableSessionWrapper autoCloseableSessionWrapper = new AutoCloseableSessionWrapper()) {
             // manages transactions
-            T object = session.beginAndCommitTransaction(get);
+            T object = autoCloseableSessionWrapper.beginAndCommitTransaction(get);
             result = Optional.ofNullable(object);
         }
         return result;
+    }
+
+    @Override
+    public Collection<T> get() {
+        try (AutoCloseableSessionWrapper autoCloseableSessionWrapper = new AutoCloseableSessionWrapper()) {
+            Session session = autoCloseableSessionWrapper.getSESSION();
+
+            CriteriaQuery<T> query = session.getCriteriaBuilder().createQuery(self);
+            query.from(self);
+
+            return session.createQuery(query).getResultList();
+        }
     }
 
     @Override
