@@ -9,6 +9,7 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor(force = true)
+@AllArgsConstructor
 @Entity
 @Table(name = "users")
 public class User {
@@ -32,4 +33,5 @@ public class User {
     @ToString.Exclude
     @OneToMany(mappedBy = "user",orphanRemoval = true,cascade = CascadeType.ALL)
     private final List<Category> categories = new ArrayList<>();
+
 }
