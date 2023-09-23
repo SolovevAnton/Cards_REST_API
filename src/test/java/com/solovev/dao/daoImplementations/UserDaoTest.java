@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.*;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,8 +26,8 @@ public class UserDaoTest {
         DAO<User> userDAO = new UserDao();
 
         //found
-        assertEquals(users.get(0),userDAO.get(1).orElse(null));
-        assertEquals(users.get(2),userDAO.get(3).orElse(null));
+        assertEquals(USERS.get(0),userDAO.get(1).orElse(null));
+        assertEquals(USERS.get(2),userDAO.get(3).orElse(null));
 
         //not found
         assertEquals(Optional.empty(),userDAO.get(-1));
@@ -37,14 +36,14 @@ public class UserDaoTest {
     }
 
     @BeforeEach
-    private void setUp() throws SQLException {
-        setUpUsers(users);
+    public void setUp() throws SQLException {
+        setUpUsers();
     }
 
-    private void setUpUsers(Collection<User> users) throws SQLException {
+    private void setUpUsers() throws SQLException {
         String SQL = "INSERT INTO " + USERS_TABLE_NAME + "(login,name,password,registration_date) values(?,?,?,?)";
         try (PreparedStatement statement = connection.prepareStatement(SQL)) {
-            for (User user : users) {
+            for (User user : USERS) {
                 statement.setString(1, user.getLogin());
                 statement.setString(2, user.getName());
                 statement.setString(3, user.getPassword());
@@ -57,7 +56,7 @@ public class UserDaoTest {
     }
 
     @AfterEach
-    private void tearDown() throws SQLException {
+    public void tearDown() throws SQLException {
         String sqlDelete = "DELETE FROM " + USERS_TABLE_NAME;
         executeStatement(sqlDelete);
     }
@@ -70,7 +69,7 @@ public class UserDaoTest {
 
     private static Connection connection;
     private static final String USERS_TABLE_NAME = User.class.getAnnotation(Table.class).name();
-    private static List<User> users = List.of(
+    private static final List<User> USERS = List.of(
             new User(1,"firstLog", "firstPass", "first"),
             new User(2,"secondLog", "secondPass", "second"),
             new User(3,"thirdLog", "thirdPass", "third")
@@ -81,7 +80,7 @@ public class UserDaoTest {
      * IMPORTANT: in test folder for resources must present hibernatemysql file for tested db, otherwise ioException will be thrown
      */
     @BeforeAll
-    private static void dbFactoryAndTablesAndConnectionCreation() throws IOException, ClassNotFoundException, SQLException {
+    public static void dbFactoryAndTablesAndConnectionCreation() throws IOException, ClassNotFoundException, SQLException {
         //assert the file is presented
         String neededResourceName = "hibernatemysql.cfg.xml";
         if (!Files.exists(Path.of("src", "test", "java", "resources", neededResourceName))) {
@@ -104,7 +103,7 @@ public class UserDaoTest {
     }
 
     @AfterAll
-    private static void tablesAndConnectionTearDown() throws SQLException {
+    public static void tablesAndConnectionTearDown() throws SQLException {
         dropAllCreatedTables();
         closeConnection();
     }

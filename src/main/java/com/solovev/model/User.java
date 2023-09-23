@@ -27,7 +27,7 @@ public class User {
     private String name;
 
     @Column(name = "registration_date", updatable = false)
-    private final LocalDate registrationDate = LocalDate.now();;
+    private final LocalDate registrationDate = LocalDate.now();
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
