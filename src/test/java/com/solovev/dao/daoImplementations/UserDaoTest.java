@@ -22,26 +22,43 @@ import static org.junit.jupiter.api.Assertions.*;
 public class UserDaoTest {
 
     @Test
-    public void getByIdTest() {
+    public void getByIdTest() throws SQLException {
         DAO<User> userDAO = new UserDao();
-
         //found
-        assertEquals(USERS.get(0),userDAO.get(1).orElse(null));
-        assertEquals(USERS.get(2),userDAO.get(3).orElse(null));
+        User firstUser = USERS.get(0);
+        User lastUser = USERS.get(USERS.size() - 1);
+
+        assertEquals(firstUser, userDAO.get(getMinIdInDb()).orElse(null));
+        assertEquals(lastUser, userDAO.get(getMaxIdInDb()).orElse(null));
 
         //not found
-        assertEquals(Optional.empty(),userDAO.get(-1));
-        assertEquals(Optional.empty(),userDAO.get(0));
-        assertEquals(Optional.empty(),userDAO.get(4));
+        assertEquals(Optional.empty(), userDAO.get(-1));
+        assertEquals(Optional.empty(), userDAO.get(getMinIdInDb() - 1));
+        assertEquals(Optional.empty(), userDAO.get(getMaxIdInDb() + 1));
     }
+
     @Test
     public void getAll() throws SQLException {
         DAO<User> userDAO = new UserDao();
-        assertEquals(USERS,userDAO.get());
+        assertEquals(USERS, userDAO.get());
 
         clearTable();
 
-        assertEquals(List.of(),userDAO.get());
+        assertEquals(List.of(), userDAO.get());
+    }
+
+    private long getMinIdInDb() throws SQLException {
+        String getMinIdSQL = " SELECT MIN(id) FROM " + USERS_TABLE_NAME;
+        ResultSet resultSet = connection.createStatement().executeQuery(getMinIdSQL);
+        resultSet.next();
+        return resultSet.getLong(1);
+    }
+
+    private long getMaxIdInDb() throws SQLException {
+        String getMaxIdSQL = " SELECT MAX(id) FROM " + USERS_TABLE_NAME;
+        ResultSet resultSet = connection.createStatement().executeQuery(getMaxIdSQL);
+        resultSet.next();
+        return resultSet.getLong(1);
     }
 
     @BeforeEach
@@ -68,6 +85,7 @@ public class UserDaoTest {
     public void tearDown() throws SQLException {
         clearTable();
     }
+
     private static void clearTable() throws SQLException {
         String sqlDelete = "DELETE FROM " + USERS_TABLE_NAME;
         executeStatement(sqlDelete);
@@ -82,9 +100,9 @@ public class UserDaoTest {
     private static Connection connection;
     private static final String USERS_TABLE_NAME = User.class.getAnnotation(Table.class).name();
     private static final List<User> USERS = List.of(
-            new User(1,"firstLog", "firstPass", "first"),
-            new User(2,"secondLog", "secondPass", "second"),
-            new User(3,"thirdLog", "thirdPass", "third")
+            new User(1, "firstLog", "firstPass", "first"),
+            new User(2, "secondLog", "secondPass", "second"),
+            new User(3, "thirdLog", "thirdPass", "third")
     );
 
     /**
