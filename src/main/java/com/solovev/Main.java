@@ -1,5 +1,6 @@
 package com.solovev;
 
+import com.solovev.dao.AutoCloseableSessionWrapper;
 import com.solovev.model.Card;
 import com.solovev.model.Category;
 import com.solovev.model.User;
@@ -15,9 +16,6 @@ public class Main {
     *   5. connection in tests is open for all tests is it ok?
     * */
     public static void main(String[] args) {
-        System.out.println(new User());
-        System.out.println(new Category());
-        System.out.println(new Card());
 
     }
 }

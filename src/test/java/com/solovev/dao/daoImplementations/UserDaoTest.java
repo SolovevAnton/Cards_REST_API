@@ -5,11 +5,9 @@ import com.solovev.dao.SessionFactorySingleton;
 import com.solovev.model.Card;
 import com.solovev.model.Category;
 import com.solovev.model.User;
-
-import javax.persistence.Table;
-
 import org.junit.jupiter.api.*;
 
+import javax.persistence.Table;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -79,6 +77,38 @@ public class UserDaoTest {
 
         assertThrows(IllegalArgumentException.class, () -> userDAO.add(emptyUser));
         assertThrows(IllegalArgumentException.class, () -> userDAO.add(existingUser));
+
+        //asserts that original table is the same
+        assertEquals(USERS, userDAO.get());
+    }
+
+    @Test
+    public void updateSuccessful() throws SQLException {
+        DAO<User> userDAO = new UserDao();
+        long idToUpdate = getMinIdInDb();
+        User originalUser = userDAO.get(idToUpdate).orElse(null);
+        User userUpdate = new User(idToUpdate, "updatedLog", "updatedPass", "updatedName");
+        assumeTrue(userDAO.get().contains(originalUser));
+
+        assertTrue(userDAO.update(userUpdate));
+        assertEquals(userUpdate, userDAO.get(idToUpdate).get());
+        assertFalse(userDAO.get().contains(originalUser));
+    }
+
+    @Test
+    public void updateUnsuccessful() throws SQLException {
+        DAO<User> userDAO = new UserDao();
+        long idToUpdate = getMinIdInDb();
+        User originalUser = userDAO.get(idToUpdate).orElse(null);
+        User emptyUser = new User();
+        //will repeat login from some user
+        User corruptedUser = new User(idToUpdate, USERS.get(2).getLogin(), "updatedPass", "updatedName");
+        User corruptedIdUser = new User(idToUpdate - 1, USERS.get(2).getLogin(), "updatedPass", "updatedName");
+        assumeTrue(userDAO.get().contains(originalUser));
+
+        assertThrows(IllegalArgumentException.class,() -> userDAO.update(corruptedUser));
+        assertThrows(IllegalArgumentException.class,() -> userDAO.update(corruptedIdUser));
+        assertThrows(IllegalArgumentException.class,() -> userDAO.update(emptyUser));
 
         //asserts that original table is the same
         assertEquals(USERS, userDAO.get());

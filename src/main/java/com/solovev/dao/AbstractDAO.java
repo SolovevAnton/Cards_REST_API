@@ -1,10 +1,12 @@
 package com.solovev.dao;
 
 import lombok.RequiredArgsConstructor;
+import org.hibernate.ObjectNotFoundException;
 import org.hibernate.PropertyValueException;
 import org.hibernate.Session;
 import org.hibernate.exception.ConstraintViolationException;
 
+import javax.persistence.PersistenceException;
 import javax.persistence.criteria.CriteriaQuery;
 import java.util.Collection;
 import java.util.Optional;
@@ -46,7 +48,6 @@ public abstract class AbstractDAO<T> implements DAO<T> {
 
             CriteriaQuery<T> query = session.getCriteriaBuilder().createQuery(self);
             query.from(self);
-
             return session.createQuery(query).getResultList();
         }
     }
@@ -74,5 +75,17 @@ public abstract class AbstractDAO<T> implements DAO<T> {
             }
         }
         return objectToDelete;
+    }
+
+    @Override
+    public boolean update(T elem) {
+        Consumer<Session> update = session -> session.update(elem);
+
+        try (AutoCloseableSessionWrapper autoCloseableSessionWrapper = new AutoCloseableSessionWrapper()) {
+            autoCloseableSessionWrapper.beginAndCommitTransaction(update);
+            return true;
+        } catch (PersistenceException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 }

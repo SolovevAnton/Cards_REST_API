@@ -35,4 +35,11 @@ public interface DAO<T> {
      * @return Optional of deleted object, or empty optional if there is no object with this id in DB
      */
     Optional<T> delete(long id);
+
+    /**
+     * Updates object with the id of the given object
+     * @param elem to update with
+     * @return true if update was successful
+     */
+    boolean update(T elem);
 }
