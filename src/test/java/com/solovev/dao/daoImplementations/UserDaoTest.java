@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 public class UserDaoTest {
 
@@ -45,6 +47,41 @@ public class UserDaoTest {
         clearTable();
 
         assertEquals(List.of(), userDAO.get());
+    }
+
+    @Test
+    public void delete() throws SQLException {
+        DAO<User> userDAO = new UserDao();
+        long idToDelete = getMinIdInDb();
+        User userToDelete = USERS.get(0);
+
+        assumeTrue(userDAO.get().contains(userToDelete));
+        assertEquals(userToDelete, userDAO.delete(idToDelete).orElse(null));
+        assertFalse(userDAO.get().contains(userToDelete));
+        assertEquals(Optional.empty(), userDAO.delete(idToDelete));
+    }
+
+    @Test
+    public void addSuccessful() throws SQLException {
+        DAO<User> userDAO = new UserDao();
+        User userToAdd = new User(-1, "addedLog", "addedPass", "addedName");
+
+        assumeFalse(userDAO.get().contains(userToAdd));
+        assertTrue(userDAO.add(userToAdd));
+        assertEquals(userToAdd, userDAO.get(getMaxIdInDb()).get());
+    }
+
+    @Test
+    public void addUnsuccessful() {
+        DAO<User> userDAO = new UserDao();
+        User emptyUser = new User();
+        User existingUser = USERS.get(0);
+
+        assertThrows(IllegalArgumentException.class, () -> userDAO.add(emptyUser));
+        assertThrows(IllegalArgumentException.class, () -> userDAO.add(existingUser));
+
+        //asserts that original table is the same
+        assertEquals(USERS, userDAO.get());
     }
 
     private long getMinIdInDb() throws SQLException {
@@ -136,6 +173,7 @@ public class UserDaoTest {
     public static void tablesAndConnectionTearDown() throws SQLException {
         dropAllCreatedTables();
         closeConnection();
+
     }
 
     private static void dropAllCreatedTables() throws SQLException {

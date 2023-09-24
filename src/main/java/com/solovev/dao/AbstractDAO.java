@@ -1,11 +1,14 @@
 package com.solovev.dao;
 
 import lombok.RequiredArgsConstructor;
+import org.hibernate.PropertyValueException;
 import org.hibernate.Session;
+import org.hibernate.exception.ConstraintViolationException;
 
 import javax.persistence.criteria.CriteriaQuery;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -50,8 +53,26 @@ public abstract class AbstractDAO<T> implements DAO<T> {
 
     @Override
     public boolean add(T elem) {
-        return false;
+        Consumer<Session> add = session -> session.save(elem);
+
+        try (AutoCloseableSessionWrapper autoCloseableSessionWrapper = new AutoCloseableSessionWrapper()) {
+            autoCloseableSessionWrapper.beginAndCommitTransaction(add);
+            return true;
+        } catch (ConstraintViolationException | PropertyValueException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
+    @Override
+    public Optional<T> delete(long id) {
+        Optional<T> objectToDelete = get(id);
 
+        if (objectToDelete.isPresent()) {
+            try (AutoCloseableSessionWrapper autoCloseableSessionWrapper = new AutoCloseableSessionWrapper()) {
+                Consumer<Session> delete = session -> session.delete(objectToDelete.get());
+                autoCloseableSessionWrapper.beginAndCommitTransaction(delete);
+            }
+        }
+        return objectToDelete;
+    }
 }

@@ -17,7 +17,7 @@ public class User {
     @EqualsAndHashCode.Exclude
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private final long id;
 
     @NonNull
     @Column(unique = true, nullable = false)
