@@ -7,6 +7,7 @@ import com.solovev.model.Category;
 import com.solovev.model.User;
 import org.junit.jupiter.api.*;
 
+
 import javax.persistence.Table;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -45,6 +46,25 @@ public class UserDaoTest {
         clearTable();
 
         assertEquals(List.of(), userDAO.get());
+    }
+
+    @Nested
+    public class getByParamTests {
+        @Test
+        public void getObjectByParamSuccess() {
+            DAO<User> userDAO = new UserDao();
+
+            assertEquals(USERS.get(0), userDAO.getObjectByParam("name", USERS.get(0).getName()).get());
+            assertEquals(USERS.get(1), userDAO.getObjectByParam("name", USERS.get(1).getName()).get());
+            assertEquals(USERS.get(0), userDAO.getObjectByParam("login", USERS.get(0).getLogin()).get());
+        }
+
+        @Test
+        public void getObjectByParamNotFound() {
+            DAO<User> userDAO = new UserDao();
+
+            assertEquals(Optional.empty(), userDAO.getObjectByParam("name", "non existent"));
+        }
     }
 
     @Test
@@ -106,9 +126,9 @@ public class UserDaoTest {
         User corruptedIdUser = new User(idToUpdate - 1, USERS.get(2).getLogin(), "updatedPass", "updatedName");
         assumeTrue(userDAO.get().contains(originalUser));
 
-        assertThrows(IllegalArgumentException.class,() -> userDAO.update(corruptedUser));
-        assertThrows(IllegalArgumentException.class,() -> userDAO.update(corruptedIdUser));
-        assertThrows(IllegalArgumentException.class,() -> userDAO.update(emptyUser));
+        assertThrows(IllegalArgumentException.class, () -> userDAO.update(corruptedUser));
+        assertThrows(IllegalArgumentException.class, () -> userDAO.update(corruptedIdUser));
+        assertThrows(IllegalArgumentException.class, () -> userDAO.update(emptyUser));
 
         //asserts that original table is the same
         assertEquals(USERS, userDAO.get());

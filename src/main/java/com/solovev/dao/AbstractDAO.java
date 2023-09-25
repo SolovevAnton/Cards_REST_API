@@ -1,13 +1,16 @@
 package com.solovev.dao;
 
 import lombok.RequiredArgsConstructor;
-import org.hibernate.ObjectNotFoundException;
 import org.hibernate.PropertyValueException;
 import org.hibernate.Session;
 import org.hibernate.exception.ConstraintViolationException;
+import org.hibernate.query.Query;
 
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -51,6 +54,43 @@ public abstract class AbstractDAO<T> implements DAO<T> {
             return session.createQuery(query).getResultList();
         }
     }
+
+    @Override
+    public <U> Optional<T> getObjectByParam(String paramName, U param) {
+        Optional<T> result;
+        try (AutoCloseableSessionWrapper autoCloseableSessionWrapper = new AutoCloseableSessionWrapper()) {
+            result = Optional.of(createQuery(autoCloseableSessionWrapper, paramName, param)
+                    .getSingleResult());
+        } catch (NoResultException ignored) {
+            result = Optional.empty();
+        }
+        return result;
+    }
+
+    @Override
+    public <U> Collection<T> getObjectsByParam(String paramName, U param) {
+        try (AutoCloseableSessionWrapper autoCloseableSessionWrapper = new AutoCloseableSessionWrapper()) {
+            return createQuery(autoCloseableSessionWrapper, paramName, param)
+                    .getResultList();
+        }
+    }
+
+    @Override
+    public Optional<T> getObjectByParams(String[] paramNames, Object[] params) {
+        return Optional.empty();
+    }
+
+    private <U> Query<T> createQuery(AutoCloseableSessionWrapper autoCloseableSessionWrapper, String paramName, U param) {
+        Session session = autoCloseableSessionWrapper.getSESSION();
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(self);
+        Root<T> root = criteriaQuery.from(self);
+
+        criteriaQuery.where(
+                criteriaBuilder.equal(root.get(paramName), param));
+        return session.createQuery(criteriaQuery);
+    }
+
 
     @Override
     public boolean add(T elem) {

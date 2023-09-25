@@ -22,6 +22,24 @@ public interface DAO<T> {
     Collection<T> get();
 
     /**
+     * Gets single object by matching single param
+     * @param paramName name of the param to match
+     * @param param value to match
+     * @return single result, or throws if result is more than one
+     */
+    <U> Optional<T> getObjectByParam(String paramName, U param);
+
+    /**
+     * Gets collection of objects matching single param
+     * @param paramName name of the param to match
+     * @param param value to match
+     * @return list of results, matching the criteria
+     */
+    <U> Collection<T> getObjectsByParam(String paramName, U param);
+
+    Optional<T> getObjectByParams(String[] paramNames, Object[] params);
+
+    /**
      * Adds elem in DB
      * @param elem to add
      * @return true if added successfully, false otherwise
@@ -42,4 +60,5 @@ public interface DAO<T> {
      * @return true if update was successful
      */
     boolean update(T elem);
+
 }
