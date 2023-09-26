@@ -7,7 +7,7 @@ import org.hibernate.Transaction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class AutoCloseableSessionWrapper implements AutoCloseable {
+public class SessionDecorator implements AutoCloseable {
     private final Session SESSION = SessionFactorySingleton.getInstance().openSession();
 
     public Session getSESSION() {

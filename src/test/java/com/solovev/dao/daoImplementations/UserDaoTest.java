@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.*;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -64,6 +65,47 @@ public class UserDaoTest {
             DAO<User> userDAO = new UserDao();
 
             assertEquals(Optional.empty(), userDAO.getObjectByParam("name", "non existent"));
+        }
+
+        @Test
+        public void getObjectsByParamSuccess(){
+            DAO<User> userDAO = new UserDao();
+
+          assertEquals(USERS,userDAO.getObjectsByParam(Map.of()));
+        }
+
+        @Test
+        public void getObjectByParamsSuccess() {
+            DAO<User> userDAO = new UserDao();
+            User userToFind = USERS.get(0);
+            String userLog = userToFind.getLogin();
+            String userPass = userToFind.getPassword();
+
+            assertEquals(userToFind, userDAO.getObjectByParam(Map.of("login", userLog, "password", userPass)).get());
+            assertEquals(userToFind, userDAO.getObjectByParam(Map.of("login", userLog)).get());
+        }
+
+        @Test
+        public void getObjectByParamsNotFound() {
+            DAO<User> userDAO = new UserDao();
+
+            User userToFind = USERS.get(0);
+            String userLog = userToFind.getLogin();
+            String userPass = userToFind.getPassword();
+            String nonExistentLog = userLog + " corrupted";
+            String nonExistentPass = userPass + " corrupted";
+
+
+            assertEquals(Optional.empty(),
+                    userDAO.getObjectByParam(Map.of("login", nonExistentLog)));
+            assertEquals(Optional.empty(),
+                    userDAO.getObjectByParam(Map.of("login", userLog, "password", nonExistentPass)));
+
+            assertEquals(Optional.empty(),
+                    userDAO.getObjectByParam(Map.of("login", nonExistentLog, "password", userPass)));
+            assertEquals(Optional.empty(),
+                    userDAO.getObjectByParam(Map.of("login", nonExistentLog, "password", nonExistentPass)));
+
         }
     }
 

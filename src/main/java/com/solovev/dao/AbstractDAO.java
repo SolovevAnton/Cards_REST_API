@@ -1,5 +1,6 @@
 package com.solovev.dao;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.PropertyValueException;
 import org.hibernate.Session;
@@ -10,8 +11,10 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -36,9 +39,9 @@ public abstract class AbstractDAO<T> implements DAO<T> {
         Function<Session, T> get = session -> session.get(self, id);
         Optional<T> result;
 
-        try (AutoCloseableSessionWrapper autoCloseableSessionWrapper = new AutoCloseableSessionWrapper()) {
+        try (SessionDecorator sessionDecorator = new SessionDecorator()) {
             // manages transactions
-            T object = autoCloseableSessionWrapper.beginAndCommitTransaction(get);
+            T object = sessionDecorator.beginAndCommitTransaction(get);
             result = Optional.ofNullable(object);
         }
         return result;
@@ -46,8 +49,8 @@ public abstract class AbstractDAO<T> implements DAO<T> {
 
     @Override
     public Collection<T> get() {
-        try (AutoCloseableSessionWrapper autoCloseableSessionWrapper = new AutoCloseableSessionWrapper()) {
-            Session session = autoCloseableSessionWrapper.getSESSION();
+        try (SessionDecorator sessionDecorator = new SessionDecorator()) {
+            Session session = sessionDecorator.getSESSION();
 
             CriteriaQuery<T> query = session.getCriteriaBuilder().createQuery(self);
             query.from(self);
@@ -57,37 +60,44 @@ public abstract class AbstractDAO<T> implements DAO<T> {
 
     @Override
     public <U> Optional<T> getObjectByParam(String paramName, U param) {
+        return getObjectByParam(Map.of(paramName,param));
+    }
+    @Override
+    public Optional<T> getObjectByParam(Map<String, Object> paramNamesAndValues) {
         Optional<T> result;
-        try (AutoCloseableSessionWrapper autoCloseableSessionWrapper = new AutoCloseableSessionWrapper()) {
-            result = Optional.of(createQuery(autoCloseableSessionWrapper, paramName, param)
+        try (SessionDecorator sessionDecorator = new SessionDecorator()) {
+            result = Optional.of(createQuery(sessionDecorator,paramNamesAndValues)
                     .getSingleResult());
         } catch (NoResultException ignored) {
             result = Optional.empty();
         }
         return result;
     }
-
     @Override
     public <U> Collection<T> getObjectsByParam(String paramName, U param) {
-        try (AutoCloseableSessionWrapper autoCloseableSessionWrapper = new AutoCloseableSessionWrapper()) {
-            return createQuery(autoCloseableSessionWrapper, paramName, param)
+        return getObjectsByParam(Map.of(paramName,param));
+    }
+    @Override
+    public Collection<T> getObjectsByParam(Map<String, Object> paramNamesAndValues) {
+        try (SessionDecorator sessionDecorator = new SessionDecorator()) {
+            return createQuery(sessionDecorator, paramNamesAndValues)
                     .getResultList();
         }
     }
 
-    @Override
-    public Optional<T> getObjectByParams(String[] paramNames, Object[] params) {
-        return Optional.empty();
-    }
-
-    private <U> Query<T> createQuery(AutoCloseableSessionWrapper autoCloseableSessionWrapper, String paramName, U param) {
-        Session session = autoCloseableSessionWrapper.getSESSION();
+    private Query<T> createQuery(SessionDecorator sessionDecorator, Map<String, Object> paramNamesAndValues) {
+        Session session = sessionDecorator.getSESSION();
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(self);
         Root<T> root = criteriaQuery.from(self);
+        Predicate[] predicates = new Predicate[paramNamesAndValues.size()];
 
-        criteriaQuery.where(
-                criteriaBuilder.equal(root.get(paramName), param));
+        int counter = 0;
+        for (Map.Entry<String, Object> entry : paramNamesAndValues.entrySet()) {
+            predicates[counter++] = criteriaBuilder.equal(root.get(entry.getKey()),entry.getValue());
+        }
+        criteriaQuery.where(predicates);
+
         return session.createQuery(criteriaQuery);
     }
 
@@ -96,8 +106,8 @@ public abstract class AbstractDAO<T> implements DAO<T> {
     public boolean add(T elem) {
         Consumer<Session> add = session -> session.save(elem);
 
-        try (AutoCloseableSessionWrapper autoCloseableSessionWrapper = new AutoCloseableSessionWrapper()) {
-            autoCloseableSessionWrapper.beginAndCommitTransaction(add);
+        try (SessionDecorator sessionDecorator = new SessionDecorator()) {
+            sessionDecorator.beginAndCommitTransaction(add);
             return true;
         } catch (ConstraintViolationException | PropertyValueException e) {
             throw new IllegalArgumentException(e);
@@ -109,9 +119,9 @@ public abstract class AbstractDAO<T> implements DAO<T> {
         Optional<T> objectToDelete = get(id);
 
         if (objectToDelete.isPresent()) {
-            try (AutoCloseableSessionWrapper autoCloseableSessionWrapper = new AutoCloseableSessionWrapper()) {
+            try (SessionDecorator sessionDecorator = new SessionDecorator()) {
                 Consumer<Session> delete = session -> session.delete(objectToDelete.get());
-                autoCloseableSessionWrapper.beginAndCommitTransaction(delete);
+                sessionDecorator.beginAndCommitTransaction(delete);
             }
         }
         return objectToDelete;
@@ -121,8 +131,8 @@ public abstract class AbstractDAO<T> implements DAO<T> {
     public boolean update(T elem) {
         Consumer<Session> update = session -> session.update(elem);
 
-        try (AutoCloseableSessionWrapper autoCloseableSessionWrapper = new AutoCloseableSessionWrapper()) {
-            autoCloseableSessionWrapper.beginAndCommitTransaction(update);
+        try (SessionDecorator sessionDecorator = new SessionDecorator()) {
+            sessionDecorator.beginAndCommitTransaction(update);
             return true;
         } catch (PersistenceException e) {
             throw new IllegalArgumentException(e);

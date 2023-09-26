@@ -1,10 +1,5 @@
 package com.solovev;
 
-import com.solovev.dao.AutoCloseableSessionWrapper;
-import com.solovev.model.Card;
-import com.solovev.model.Category;
-import com.solovev.model.User;
-
 public class Main {
     /*
     * todo
