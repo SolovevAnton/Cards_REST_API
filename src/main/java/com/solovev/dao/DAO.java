@@ -7,7 +7,7 @@ import java.util.Optional;
 /**
  * Interface to perform CRUD operations
  *
- * @param <T>  object type to perform crud on
+ * @param <T> object type to perform crud on
  */
 public interface DAO<T> {
     /**
@@ -33,12 +33,14 @@ public interface DAO<T> {
     <U> Optional<T> getObjectByParam(String paramName, U param);
 
     /**
-     * Gets one object matching given params
+     * Gets one object matching given params;
+     * Empty Map will result in getting all entities     *
      *
      * @param paramNamesAndValues map of param names and theirs values, analog of WHERE a="A" AND b="B" AND...
      * @return matching object or empty if none match
      */
     Optional<T> getObjectByParam(Map<String, Object> paramNamesAndValues);
+
     /**
      * Gets collection of objects matching single param
      *

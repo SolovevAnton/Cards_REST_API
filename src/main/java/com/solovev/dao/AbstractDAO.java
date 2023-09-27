@@ -1,6 +1,5 @@
 package com.solovev.dao;
 
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.PropertyValueException;
 import org.hibernate.Session;
@@ -49,13 +48,7 @@ public abstract class AbstractDAO<T> implements DAO<T> {
 
     @Override
     public Collection<T> get() {
-        try (SessionDecorator sessionDecorator = new SessionDecorator()) {
-            Session session = sessionDecorator.getSESSION();
-
-            CriteriaQuery<T> query = session.getCriteriaBuilder().createQuery(self);
-            query.from(self);
-            return session.createQuery(query).getResultList();
-        }
+            return getObjectsByParam(Map.of());
     }
 
     @Override
