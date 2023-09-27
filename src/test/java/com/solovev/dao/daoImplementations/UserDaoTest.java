@@ -192,10 +192,17 @@ public class UserDaoTest {
 
     @BeforeEach
     public void setUp() throws SQLException {
-        setUpUsers();
+        openAndConfigureConnection();
+        setUpUsersTableValues();
     }
+    private void openAndConfigureConnection() throws SQLException {
+        String jdbcUrl = "jdbc:mysql://localhost:3306/test_db";
+        String username = "root";
+        String password = "root";
 
-    private void setUpUsers() throws SQLException {
+        connection = DriverManager.getConnection(jdbcUrl, username, password);
+    }
+    private void setUpUsersTableValues() throws SQLException {
         String SQL = "INSERT INTO " + USERS_TABLE_NAME + "(login,name,password,registration_date) values(?,?,?,?)";
         try (PreparedStatement statement = connection.prepareStatement(SQL)) {
             for (User user : USERS) {
@@ -213,13 +220,20 @@ public class UserDaoTest {
     @AfterEach
     public void tearDown() throws SQLException {
         clearTable();
+        closeConnection();
     }
 
-    private static void clearTable() throws SQLException {
+    private void clearTable() throws SQLException {
         String sqlDelete = "DELETE FROM " + USERS_TABLE_NAME;
         executeStatement(sqlDelete);
     }
-
+    private static void closeConnection() {
+        if (connection != null)
+            try {
+                connection.close();
+            } catch (SQLException ignored) {
+            }
+    }
     private static void executeStatement(String sqlQuery) throws SQLException {
         PreparedStatement statement = connection.prepareStatement(sqlQuery);
         statement.executeUpdate();
@@ -239,7 +253,7 @@ public class UserDaoTest {
      * IMPORTANT: in test folder for resources must present hibernatemysql file for tested db, otherwise ioException will be thrown
      */
     @BeforeAll
-    public static void dbFactoryAndTablesAndConnectionCreation() throws IOException, ClassNotFoundException, SQLException {
+    public static void dbFactoryAndTablesCreation() throws IOException, ClassNotFoundException, SQLException {
         //assert the file is presented
         String neededResourceName = "hibernatemysql.cfg.xml";
         if (!Files.exists(Path.of("src", "test", "java", "resources", neededResourceName))) {
@@ -250,22 +264,13 @@ public class UserDaoTest {
         SessionFactorySingleton.getInstance();
 
         Class.forName("com.mysql.cj.jdbc.Driver");
-        openAndConfigureConnection();
     }
 
-    private static void openAndConfigureConnection() throws SQLException {
-        String jdbcUrl = "jdbc:mysql://localhost:3306/test_db";
-        String username = "root";
-        String password = "root";
 
-        connection = DriverManager.getConnection(jdbcUrl, username, password);
-    }
 
     @AfterAll
     public static void tablesAndConnectionTearDown() throws SQLException {
         dropAllCreatedTables();
-        closeConnection();
-
     }
 
     private static void dropAllCreatedTables() throws SQLException {
@@ -279,13 +284,7 @@ public class UserDaoTest {
         }
     }
 
-    private static void closeConnection() {
-        if (connection != null)
-            try {
-                connection.close();
-            } catch (SQLException ignored) {
-            }
-    }
+
 
 
 }
