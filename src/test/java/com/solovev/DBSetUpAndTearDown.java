@@ -25,23 +25,11 @@ public class DBSetUpAndTearDown {
     private final String CATEGORIES_TABLE_NAME = Category.class.getAnnotation(Table.class).name();
     private final String USERS_TABLE_NAME = User.class.getAnnotation(Table.class).name();
 
-    public DBSetUpAndTearDown() throws SQLException {
-        openConnection();
-    }
-
-    private void openConnection() throws SQLException {
-        String jdbcUrl = "jdbc:mysql://localhost:3306/test_db";
-        String username = "root";
-        String password = "root";
-
-        connection = DriverManager.getConnection(jdbcUrl, username, password);
-    }
-
     /**
      * Creates factory for DB in hibernate, create all tables if necessary
      * IMPORTANT: in test folder for resources must present hibernatemysql file for tested db, otherwise ioException will be thrown
      */
-    public void dbFactoryAndTablesCreation() throws IOException, ClassNotFoundException {
+    public void dbFactoryAndTablesCreation() throws IOException, ClassNotFoundException, SQLException {
         //assert the file is presented
         String neededResourceName = "hibernatemysql.cfg.xml";
         if (!Files.exists(Path.of("src", "test", "java", "resources", neededResourceName))) {
@@ -52,6 +40,15 @@ public class DBSetUpAndTearDown {
         SessionFactorySingleton.getInstance();
 
         Class.forName("com.mysql.cj.jdbc.Driver");
+        openConnection();
+    }
+
+    private void openConnection() throws SQLException {
+        String jdbcUrl = "jdbc:mysql://localhost:3306/test_db";
+        String username = "root";
+        String password = "root";
+
+        connection = DriverManager.getConnection(jdbcUrl, username, password);
     }
 
     /**

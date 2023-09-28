@@ -3,8 +3,6 @@ package com.solovev.model;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Represents category for user, one user can have multiple categories
