@@ -41,7 +41,7 @@ public class DBSetUpAndTearDown {
      * Creates factory for DB in hibernate, create all tables if necessary
      * IMPORTANT: in test folder for resources must present hibernatemysql file for tested db, otherwise ioException will be thrown
      */
-    public void dbFactoryAndTablesCreation() throws IOException, ClassNotFoundException, SQLException {
+    public void dbFactoryAndTablesCreation() throws IOException, ClassNotFoundException {
         //assert the file is presented
         String neededResourceName = "hibernatemysql.cfg.xml";
         if (!Files.exists(Path.of("src", "test", "java", "resources", neededResourceName))) {
@@ -65,6 +65,18 @@ public class DBSetUpAndTearDown {
                 statement.setString(2, user.getName());
                 statement.setString(3, user.getPassword());
                 statement.setDate(4, Date.valueOf(user.getRegistrationDate()));
+
+                statement.addBatch();
+            }
+            statement.executeBatch();
+        }
+    }
+    public void setUpCategoriesTableValues(Collection<Category> categories) throws SQLException {
+        String SQL = "INSERT INTO " + CATEGORIES_TABLE_NAME + "(name,user_id) values(?,?)";
+        try (PreparedStatement statement = connection.prepareStatement(SQL)) {
+            for (Category category : categories) {
+                statement.setString(1,category.getName());
+                statement.setLong(2, category.getUser().getId());
 
                 statement.addBatch();
             }
