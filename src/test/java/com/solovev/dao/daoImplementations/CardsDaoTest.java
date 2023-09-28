@@ -6,6 +6,7 @@ import com.solovev.model.Category;
 import com.solovev.model.User;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -13,7 +14,8 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 public class CardsDaoTest {
 
@@ -41,6 +43,48 @@ public class CardsDaoTest {
         assertEquals(firstUserCards, cardsDao.getByUser(firstUserId));
         assertEquals(lastUserCards, cardsDao.getByUser(lastUserId));
         assertEquals(List.of(), cardsDao.getByUser(nonExistentUser));
+    }
+
+    @Nested
+    public class ConstrainTests {
+        @Test
+        public void successfullyAdded() {
+            Card cardToAdd = new Card("QAdd", CARDS.get(0).getAnswer(), CATEGORIES.get(0));
+            Card otherToAdd = new Card(CARDS.get(0).getQuestion(), CARDS.get(0).getAnswer(), CATEGORIES.get(CATEGORIES.size() - 1));
+
+            assumeFalse(cardsDao.get().contains(cardToAdd));
+            assertTrue(cardsDao.add(cardToAdd));
+            assertTrue(cardsDao.get().contains(cardToAdd));
+
+            assumeFalse(cardsDao.get().contains(otherToAdd));
+            assertTrue(cardsDao.add(otherToAdd));
+            assertTrue(cardsDao.get().contains(otherToAdd));
+        }
+
+        @Test
+        public void nonNullViolated() {
+            Card emptyCard = new Card();
+            assertThrows(IllegalArgumentException.class, () -> cardsDao.add(emptyCard));
+            assertTrue(checkTableDidntChange());
+        }
+
+        @Test
+        public void constantViolations() {
+            Card existedCard = CARDS.get(0);
+            Card notUniqueFields = new Card(existedCard.getQuestion(), existedCard.getAnswer(), existedCard.getCategory());
+
+            assertTrue(cardsDao.get().contains(existedCard));
+            assertThrows(IllegalArgumentException.class, () -> cardsDao.add(existedCard));
+            assertTrue(checkTableDidntChange());
+
+            assertTrue(cardsDao.get().contains(notUniqueFields));
+            assertThrows(IllegalArgumentException.class, () -> cardsDao.add(notUniqueFields));
+            assertTrue(checkTableDidntChange());
+        }
+    }
+
+    private boolean checkTableDidntChange() {
+        return cardsDao.get().equals(CARDS);
     }
 
     @BeforeEach
