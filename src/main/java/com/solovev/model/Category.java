@@ -10,6 +10,7 @@ import javax.persistence.*;
 @Data
 @RequiredArgsConstructor
 @NoArgsConstructor(force = true)
+@AllArgsConstructor
 @Entity
 @Table(name = "categories",
         uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "user_id"})})

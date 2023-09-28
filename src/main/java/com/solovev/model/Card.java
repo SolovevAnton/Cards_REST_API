@@ -1,8 +1,6 @@
 package com.solovev.model;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -13,11 +11,13 @@ import java.time.LocalDate;
  * Card with question for category
  */
 @Data
+@RequiredArgsConstructor
 @NoArgsConstructor(force = true)
 @Entity
 @Table(name = "Cards",
         uniqueConstraints = {@UniqueConstraint(columnNames = {"question", "answer", "category_id"})})
 public class Card {
+    @EqualsAndHashCode.Exclude
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

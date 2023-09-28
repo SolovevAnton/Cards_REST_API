@@ -80,6 +80,20 @@ public class DBSetUpAndTearDown {
             statement.executeBatch();
         }
     }
+    public void setUpCardsTableValues(Collection<Card> cards) throws SQLException {
+        String SQL = "INSERT INTO " + CARDS_TABLE_NAME + "(question,answer,category_id,creation_date) values(?,?,?,?)";
+        try (PreparedStatement statement = connection.prepareStatement(SQL)) {
+            for (Card card : cards) {
+                statement.setString(1,card.getQuestion());
+                statement.setString(2, card.getAnswer());
+                statement.setLong(3,card.getCategory().getId());
+                statement.setDate(4, Date.valueOf(card.getCreationDate()));
+
+                statement.addBatch();
+            }
+            statement.executeBatch();
+        }
+    }
 
     public long getMinIdInDb(String tableName) throws SQLException {
         String getMinIdSQL = " SELECT MIN(id) FROM " + tableName;
