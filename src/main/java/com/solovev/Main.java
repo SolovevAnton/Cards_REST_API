@@ -9,6 +9,7 @@ public class Main {
     *   3. Why use two side connections?
     *   4. noArgs constructor with NonNulls?
     *   5. connection in tests is open for all tests is it ok?
+    *   6. How to endPoints for same methods: get for example
     * */
     public static void main(String[] args) {
 
