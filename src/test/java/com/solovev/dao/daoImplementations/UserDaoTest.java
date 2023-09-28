@@ -71,12 +71,12 @@ public class UserDaoTest {
             LocalDate today = LocalDate.now();
 
             assertEquals(USERS, userDAO.getObjectsByParam(Map.of()));
-            assertEquals(USERS, userDAO.getObjectsByParam(Map.of("registrationDate",today)));
+            assertEquals(USERS, userDAO.getObjectsByParam(Map.of("registrationDate", today)));
         }
 
         @Test
-        public void getObjectByParamsSuccess() {
-            DAO<User> userDAO = new UserDao();
+        public void getUserByParamsSuccess() {
+            UserDao userDAO = new UserDao();
             User userToFind = USERS.get(0);
             String userLog = userToFind.getLogin();
             String userPass = userToFind.getPassword();
@@ -86,8 +86,8 @@ public class UserDaoTest {
         }
 
         @Test
-        public void getObjectByParamsNotFound() {
-            DAO<User> userDAO = new UserDao();
+        public void getUserByParamNotFound() {
+            UserDao userDAO = new UserDao();
 
             User userToFind = USERS.get(0);
             String userLog = userToFind.getLogin();
@@ -107,6 +107,33 @@ public class UserDaoTest {
                     userDAO.getObjectByParam(Map.of("login", nonExistentLog, "password", nonExistentPass)));
 
         }
+
+    }
+
+    @Test
+    public void getUserByLogAndPassSuccess() {
+        UserDao userDAO = new UserDao();
+        User userToFind = USERS.get(1);
+        String userLog = userToFind.getLogin();
+        String userPass = userToFind.getPassword();
+
+        assertEquals(userToFind, userDAO.getUserByLoginAndPass(userLog, userPass).get());
+    }
+
+    @Test
+    public void getUserByLogAndPassNotFound() {
+        UserDao userDAO = new UserDao();
+
+        User userToFind = USERS.get(1);
+        String userLog = userToFind.getLogin();
+        String userPass = userToFind.getPassword();
+        String nonExistentLog = userLog + " corrupted";
+        String nonExistentPass = userPass + " corrupted";
+
+        assertEquals(Optional.empty(), userDAO.getUserByLoginAndPass(userLog, nonExistentPass));
+        assertEquals(Optional.empty(), userDAO.getUserByLoginAndPass(nonExistentLog, userPass));
+        assertEquals(Optional.empty(), userDAO.getUserByLoginAndPass(nonExistentLog, nonExistentPass));
+
     }
 
     @Test
