@@ -19,13 +19,13 @@ public class SessionDecorator implements AutoCloseable {
      * Transaction will be rollback in case of exception
      *
      * @param methodToExecute function to execute
-     * @param <U>             result of function execution
+     * @param <T>             result of function execution
      * @return result of function execution
      */
-    public <U> U beginAndCommitTransaction(Function<Session, U> methodToExecute) {
+    public <T> T beginAndCommitTransaction(Function<Session, T> methodToExecute) {
         Transaction transaction = SESSION.beginTransaction();
         try {
-            U result = methodToExecute.apply(SESSION);
+            T result = methodToExecute.apply(SESSION);
             transaction.commit();
             return result;
         } catch (Exception e) {

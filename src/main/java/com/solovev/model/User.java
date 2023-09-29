@@ -32,7 +32,7 @@ public class User {
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    @OneToMany(mappedBy = "user",orphanRemoval = true,cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user",orphanRemoval = true,cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private final List<Category> categories = new ArrayList<>();
 
 }

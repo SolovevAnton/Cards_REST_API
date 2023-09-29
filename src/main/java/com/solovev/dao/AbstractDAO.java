@@ -3,6 +3,7 @@ package com.solovev.dao;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.PropertyValueException;
 import org.hibernate.Session;
+import org.hibernate.TransientPropertyValueException;
 import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.query.Query;
 
@@ -24,11 +25,6 @@ import java.util.function.Function;
  */
 @RequiredArgsConstructor
 public abstract class AbstractDAO<T> implements DAO<T> {
-
-    //creation of factory object
-    static {
-        SessionFactorySingleton.getInstance();
-    }
 
     private final Class<T> self;
 
@@ -102,7 +98,7 @@ public abstract class AbstractDAO<T> implements DAO<T> {
         try (SessionDecorator sessionDecorator = new SessionDecorator()) {
             sessionDecorator.beginAndCommitTransaction(add);
             return true;
-        } catch (ConstraintViolationException | PropertyValueException e) {
+        } catch (ConstraintViolationException | PropertyValueException | TransientPropertyValueException e) {
             throw new IllegalArgumentException(e);
         }
     }
