@@ -1,5 +1,6 @@
 package com.solovev.dao;
 
+import com.solovev.dto.DTO;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.PropertyValueException;
 import org.hibernate.Session;
@@ -24,7 +25,7 @@ import java.util.function.Function;
  * DB is chosen based on the SessionFactorySingleton parameters
  */
 @RequiredArgsConstructor
-public abstract class AbstractDAO<T> implements DAO<T> {
+public abstract class AbstractDAO<T extends DTO> implements DAO<T> {
 
     private final Class<T> self;
 

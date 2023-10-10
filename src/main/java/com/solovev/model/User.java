@@ -1,5 +1,6 @@
 package com.solovev.model;
 
+import com.solovev.dto.DTO;
 import lombok.*;
 
 import javax.persistence.*;
@@ -12,11 +13,10 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
-public class User {
-
+public class User implements DTO {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private final long id;
+    private long id;
 
     @NonNull
     @Column(unique = true, nullable = false)

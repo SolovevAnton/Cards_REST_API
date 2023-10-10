@@ -1,5 +1,6 @@
 package com.solovev.model;
 
+import com.solovev.dto.DTO;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -17,7 +18,7 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "Cards",
         uniqueConstraints = {@UniqueConstraint(columnNames = {"question", "answer", "category_id"})})
-public class Card {
+public class Card implements DTO {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

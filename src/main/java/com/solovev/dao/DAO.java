@@ -1,5 +1,7 @@
 package com.solovev.dao;
 
+import com.solovev.dto.DTO;
+
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
@@ -9,7 +11,7 @@ import java.util.Optional;
  *
  * @param <T> object type to perform crud on
  */
-public interface DAO<T> {
+public interface DAO<T extends DTO> {
     /**
      * Gets object by its id in db
      *
