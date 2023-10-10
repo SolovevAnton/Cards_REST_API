@@ -71,7 +71,7 @@ public class CardsDaoTest {
         @Test
         public void constantViolations() {
             Card existedCard = CARDS.get(0);
-            Card notUniqueFields = new Card(existedCard.getQuestion(), existedCard.getAnswer(), existedCard.getCategory());
+            Card notUniqueFields = new Card(existedCard.getId(), existedCard.getQuestion(), existedCard.getAnswer(), existedCard.getCategory());
 
             assertTrue(cardsDao.get().contains(existedCard));
             assertThrows(IllegalArgumentException.class, () -> cardsDao.add(existedCard));
@@ -114,8 +114,8 @@ public class CardsDaoTest {
             new Category(3, "thirdCat", USERS.get(1))
     );
     private final List<Card> CARDS = List.of(
-            new Card("Q1", "A1", CATEGORIES.get(0)),
-            new Card("Q2", "A2", CATEGORIES.get(0)),
-            new Card("Q3", "A3", CATEGORIES.get(1))
+            new Card(1,"Q1", "A1", CATEGORIES.get(0)),
+            new Card(2,"Q2", "A2", CATEGORIES.get(0)),
+            new Card(3,"Q3", "A3", CATEGORIES.get(1))
     );
 }

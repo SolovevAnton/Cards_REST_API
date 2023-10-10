@@ -95,20 +95,6 @@ public class DBSetUpAndTearDown {
         }
     }
 
-    public long getMinIdInDb(String tableName) throws SQLException {
-        String getMinIdSQL = " SELECT MIN(id) FROM " + tableName;
-        ResultSet resultSet = connection.createStatement().executeQuery(getMinIdSQL);
-        resultSet.next();
-        return resultSet.getLong(1);
-    }
-
-    public long getMaxIdInDb(String tableName) throws SQLException {
-        String getMaxIdSQL = " SELECT MAX(id) FROM " + tableName;
-        ResultSet resultSet = connection.createStatement().executeQuery(getMaxIdSQL);
-        resultSet.next();
-        return resultSet.getLong(1);
-    }
-
     public void clearTable(String tableName) throws SQLException {
         String sqlDelete = "DELETE FROM " + tableName;
         executeStatement(sqlDelete);

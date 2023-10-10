@@ -14,7 +14,6 @@ import java.util.List;
 @Table(name = "users")
 public class User {
 
-    @EqualsAndHashCode.Exclude
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private final long id;

@@ -15,7 +15,6 @@ import javax.persistence.*;
 @Table(name = "categories",
         uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "user_id"})})
 public class Category {
-    @EqualsAndHashCode.Exclude
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

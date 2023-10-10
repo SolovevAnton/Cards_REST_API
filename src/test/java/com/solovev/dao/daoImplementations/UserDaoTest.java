@@ -5,6 +5,7 @@ import com.solovev.dao.DAO;
 import com.solovev.model.User;
 import org.junit.jupiter.api.*;
 
+import javax.persistence.Table;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -21,8 +22,8 @@ public class UserDaoTest {
     @Test
     public void getByIdTest() throws SQLException {
         DAO<User> userDAO = new UserDao();
-        long maxUserId = dbSetUpAndTearDown.getMaxIdInDb(USERS_TABLE_NAME);
-        long minUserId = dbSetUpAndTearDown.getMinIdInDb(USERS_TABLE_NAME);
+        long maxUserId = USERS.size();
+        long minUserId = 1;
 
         //found
         User firstUser = USERS.get(0);
@@ -139,7 +140,7 @@ public class UserDaoTest {
     @Test
     public void delete() throws SQLException {
         DAO<User> userDAO = new UserDao();
-        long idToDelete = dbSetUpAndTearDown.getMinIdInDb(USERS_TABLE_NAME);
+        long idToDelete = 1;
         User userToDelete = USERS.get(0);
 
         assumeTrue(userDAO.get().contains(userToDelete));
@@ -152,10 +153,11 @@ public class UserDaoTest {
     public void addSuccessful() throws SQLException {
         DAO<User> userDAO = new UserDao();
         User userToAdd = new User(-1, "addedLog", "addedPass", "addedName");
+        int possibleAddedId = USERS.size() + 1;
 
         assumeFalse(userDAO.get().contains(userToAdd));
         assertTrue(userDAO.add(userToAdd));
-        assertEquals(userToAdd, userDAO.get(dbSetUpAndTearDown.getMaxIdInDb(USERS_TABLE_NAME)).get());
+        assertEquals(userToAdd, userDAO.get(possibleAddedId).get());
     }
 
     @Test
@@ -174,7 +176,7 @@ public class UserDaoTest {
     @Test
     public void updateSuccessful() throws SQLException {
         DAO<User> userDAO = new UserDao();
-        long idToUpdate = dbSetUpAndTearDown.getMinIdInDb(USERS_TABLE_NAME);
+        long idToUpdate = 1;
         User originalUser = userDAO.get(idToUpdate).orElse(null);
         User userUpdate = new User(idToUpdate, "updatedLog", "updatedPass", "updatedName");
         assumeTrue(userDAO.get().contains(originalUser));
@@ -187,7 +189,7 @@ public class UserDaoTest {
     @Test
     public void updateUnsuccessful() throws SQLException {
         DAO<User> userDAO = new UserDao();
-        long idToUpdate = dbSetUpAndTearDown.getMinIdInDb(USERS_TABLE_NAME);
+        long idToUpdate = 1;
         User originalUser = userDAO.get(idToUpdate).orElse(null);
         User emptyUser = new User();
         //will repeat login from some user
@@ -202,38 +204,24 @@ public class UserDaoTest {
         //asserts that original table is the same
         assertEquals(USERS, userDAO.get());
     }
-
-
+    private final String USERS_TABLE_NAME = User.class.getAnnotation(Table.class).name();
     @BeforeEach
-    public void setUp() throws SQLException {
+    public void setUp() throws SQLException, IOException, ClassNotFoundException {
+        dbSetUpAndTearDown.dbFactoryAndTablesCreation();
+
         dbSetUpAndTearDown.setUpUsersTableValues(USERS);
     }
 
     @AfterEach
     public void tearDown() throws SQLException {
-        dbSetUpAndTearDown.clearTable(USERS_TABLE_NAME);
+        dbSetUpAndTearDown.dbFactoryAndTablesTearDown();
     }
-
-    private static DBSetUpAndTearDown dbSetUpAndTearDown;
+    private static final DBSetUpAndTearDown dbSetUpAndTearDown = new DBSetUpAndTearDown();
     private final List<User> USERS = List.of(
             new User(1, "firstLog", "firstPass", "first"),
             new User(2, "secondLog", "secondPass", "second"),
             new User(3, "thirdLog", "thirdPass", "third")
     );
-    private static String USERS_TABLE_NAME;
-
-    @BeforeAll
-    public static void tablesAndFactorySetUp() throws SQLException, IOException, ClassNotFoundException {
-        dbSetUpAndTearDown = new DBSetUpAndTearDown();
-        dbSetUpAndTearDown.dbFactoryAndTablesCreation();
-
-        USERS_TABLE_NAME = dbSetUpAndTearDown.getUSERS_TABLE_NAME();
-    }
-
-    @AfterAll
-    public static void tablesAndFactoryTearDown() throws SQLException {
-        dbSetUpAndTearDown.dbFactoryAndTablesTearDown();
-    }
 
 }
 

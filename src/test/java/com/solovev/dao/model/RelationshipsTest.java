@@ -43,7 +43,7 @@ public class RelationshipsTest {
         assertTrue(cardsDao.add(cardToAdd));
 
         //check addition
-        long lastAddedId = dbSetUpAndTearDown.getMaxIdInDb(dbSetUpAndTearDown.getUSERS_TABLE_NAME());
+        long lastAddedId = USERS.size() + 1;
         User lastUserInDB = userDao.get(lastAddedId).get();
 
         assertEquals(userToAdd, lastUserInDB);
@@ -141,8 +141,8 @@ public class RelationshipsTest {
             new Category(3, "thirdCat", USERS.get(1))
     );
     private final List<Card> CARDS = List.of(
-            new Card("Q1", "A1", CATEGORIES.get(0)),
-            new Card("Q2", "A2", CATEGORIES.get(0)),
-            new Card("Q3", "A3", CATEGORIES.get(1))
+            new Card(1,"Q1", "A1", CATEGORIES.get(0)),
+            new Card(2,"Q2", "A2", CATEGORIES.get(0)),
+            new Card(3,"Q3", "A3", CATEGORIES.get(1))
     );
 }

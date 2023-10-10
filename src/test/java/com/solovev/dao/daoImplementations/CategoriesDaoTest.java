@@ -3,7 +3,10 @@ package com.solovev.dao.daoImplementations;
 import com.solovev.DBSetUpAndTearDown;
 import com.solovev.model.Category;
 import com.solovev.model.User;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -79,9 +82,9 @@ public class CategoriesDaoTest {
             new User(3, "thirdLog", "thirdPass", "third")
     );
     private final List<Category> CATEGORIES = List.of(
-            new Category("firstCat", USERS.get(0)),
-            new Category("secondCat", USERS.get(0)),
-            new Category("thirdCat", USERS.get(1))
+            new Category(1, "firstCat", USERS.get(0)),
+            new Category(2, "secondCat", USERS.get(0)),
+            new Category(3, "thirdCat", USERS.get(1))
     );
 
 }

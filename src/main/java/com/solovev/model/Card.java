@@ -13,11 +13,11 @@ import java.time.LocalDate;
 @Data
 @RequiredArgsConstructor
 @NoArgsConstructor(force = true)
+@AllArgsConstructor
 @Entity
 @Table(name = "Cards",
         uniqueConstraints = {@UniqueConstraint(columnNames = {"question", "answer", "category_id"})})
 public class Card {
-    @EqualsAndHashCode.Exclude
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
