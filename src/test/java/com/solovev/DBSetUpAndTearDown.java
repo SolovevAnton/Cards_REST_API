@@ -25,6 +25,7 @@ public class DBSetUpAndTearDown {
     private final String CATEGORIES_TABLE_NAME = Category.class.getAnnotation(Table.class).name();
     private final String USERS_TABLE_NAME = User.class.getAnnotation(Table.class).name();
 
+
     /**
      * Creates factory for DB in hibernate, create all tables if necessary
      * IMPORTANT: in test folder for resources must present hibernatemysql file for tested db, otherwise ioException will be thrown

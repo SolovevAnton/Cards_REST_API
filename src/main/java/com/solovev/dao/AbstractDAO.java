@@ -94,10 +94,11 @@ public abstract class AbstractDAO<T extends DTO> implements DAO<T> {
 
     @Override
     public boolean add(T elem) {
-        Consumer<Session> add = session -> session.save(elem);
+        Function<Session,Long> add = session -> (Long)session.save(elem);
 
         try (SessionDecorator sessionDecorator = new SessionDecorator()) {
-            sessionDecorator.beginAndCommitTransaction(add);
+            Long idInDb = sessionDecorator.beginAndCommitTransaction(add);
+            elem.setId(idInDb);
             return true;
         } catch (ConstraintViolationException | PropertyValueException | TransientPropertyValueException e) {
             throw new IllegalArgumentException(e);

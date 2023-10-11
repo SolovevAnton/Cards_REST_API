@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 public class UserDaoTest {
 
     @Test
-    public void getByIdTest() throws SQLException {
+    public void getByIdTest() {
         DAO<User> userDAO = new UserDao();
         long maxUserId = USERS.size();
         long minUserId = 1;
@@ -148,11 +148,21 @@ public class UserDaoTest {
         assertFalse(userDAO.get().contains(userToDelete));
         assertEquals(Optional.empty(), userDAO.delete(idToDelete));
     }
+    @Test
+    public void changeIdTest(){
+        DAO<User> userDAO = new UserDao();
+        User userToAdd = new User(-1,"addedLog", "addedPass", "addedName");
+        int possibleAddedId = USERS.size() + 1;
+
+        assumeFalse(userDAO.get().contains(userToAdd));
+        assertTrue(userDAO.add(userToAdd));
+        assertEquals(possibleAddedId,userToAdd.getId());
+    }
 
     @Test
     public void addSuccessful() throws SQLException {
         DAO<User> userDAO = new UserDao();
-        User userToAdd = new User(-1, "addedLog", "addedPass", "addedName");
+        User userToAdd = new User(-1,"addedLog", "addedPass", "addedName");
         int possibleAddedId = USERS.size() + 1;
 
         assumeFalse(userDAO.get().contains(userToAdd));
