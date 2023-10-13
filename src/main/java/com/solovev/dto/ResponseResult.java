@@ -16,6 +16,15 @@ import lombok.NoArgsConstructor;
 public class ResponseResult<T> {
     private String message;
     private T data;
+
+    public ResponseResult(String message) {
+        this.message = message;
+    }
+
+    public ResponseResult(T data) {
+        this.data = data;
+    }
+
     /**
      * Represents object as a Json sting
      * @return string in Json format of this object
