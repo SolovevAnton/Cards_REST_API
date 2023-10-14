@@ -3,6 +3,7 @@ package com.solovev.dao.daoImplementations;
 import com.solovev.DBSetUpAndTearDown;
 import com.solovev.dao.DAO;
 import com.solovev.model.User;
+import com.solovev.servlet.DataConstants;
 import org.junit.jupiter.api.*;
 
 import javax.persistence.Table;
@@ -227,11 +228,7 @@ public class UserDaoTest {
         dbSetUpAndTearDown.dbFactoryAndTablesTearDown();
     }
     private static final DBSetUpAndTearDown dbSetUpAndTearDown = new DBSetUpAndTearDown();
-    private final List<User> USERS = List.of(
-            new User(1, "firstLog", "firstPass", "first"),
-            new User(2, "secondLog", "secondPass", "second"),
-            new User(3, "thirdLog", "thirdPass", "third")
-    );
+    private final List<User> USERS = DataConstants.USERS;
 
 }
 
