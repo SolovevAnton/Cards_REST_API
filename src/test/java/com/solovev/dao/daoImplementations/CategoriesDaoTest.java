@@ -3,6 +3,7 @@ package com.solovev.dao.daoImplementations;
 import com.solovev.DBSetUpAndTearDown;
 import com.solovev.model.Category;
 import com.solovev.model.User;
+import com.solovev.servlet.DataConstants;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -76,15 +77,7 @@ public class CategoriesDaoTest {
     }
     private final CategoriesDao categoriesDao = new CategoriesDao();
     private final DBSetUpAndTearDown dbSetUpAndTearDown = new DBSetUpAndTearDown();
-    private final List<User> USERS = List.of(
-            new User(1, "firstLog", "firstPass", "first"),
-            new User(2, "secondLog", "secondPass", "second"),
-            new User(3, "thirdLog", "thirdPass", "third")
-    );
-    private final List<Category> CATEGORIES = List.of(
-            new Category(1, "firstCat", USERS.get(0)),
-            new Category(2, "secondCat", USERS.get(0)),
-            new Category(3, "thirdCat", USERS.get(1))
-    );
+    private final List<User> USERS = DataConstants.USERS;
+    private final List<Category> CATEGORIES = DataConstants.CATEGORIES;
 
 }

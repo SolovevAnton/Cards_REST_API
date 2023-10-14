@@ -32,7 +32,7 @@ public class UsersServletTest {
     @Nested
     public class doGetTests {
         @Test
-        void doGetByIdSuccess() throws IOException {
+        public void doGetByIdSuccess() throws IOException {
             User expectedUser = USERS.get(0);
             when(request.getParameter("id")).thenReturn(String.valueOf(expectedUser.getId()));
 
@@ -42,6 +42,10 @@ public class UsersServletTest {
             ResponseResult<User> expectedResp = new ResponseResult<>(expectedUser);
 
             assertEquals(expectedResp.jsonToString(), stringWriter.toString());
+        }
+        @Test
+        public void doGetByIdNotFound(){
+
         }
     }
     private UsersServlet usersServlet = new UsersServlet();

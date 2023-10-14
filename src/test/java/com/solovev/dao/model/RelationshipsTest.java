@@ -7,6 +7,7 @@ import com.solovev.dao.daoImplementations.UserDao;
 import com.solovev.model.Card;
 import com.solovev.model.Category;
 import com.solovev.model.User;
+import com.solovev.servlet.DataConstants;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -130,19 +131,7 @@ public class RelationshipsTest {
     private final CategoriesDao categoriesDao = new CategoriesDao();
     private final CardsDao cardsDao = new CardsDao();
     private final DBSetUpAndTearDown dbSetUpAndTearDown = new DBSetUpAndTearDown();
-    private final List<User> USERS = List.of(
-            new User(1, "firstLog", "firstPass", "first"),
-            new User(2, "secondLog", "secondPass", "second"),
-            new User(3, "thirdLog", "thirdPass", "third")
-    );
-    private final List<Category> CATEGORIES = List.of(
-            new Category(1, "firstCat", USERS.get(0)),
-            new Category(2, "secondCat", USERS.get(0)),
-            new Category(3, "thirdCat", USERS.get(1))
-    );
-    private final List<Card> CARDS = List.of(
-            new Card(1,"Q1", "A1", CATEGORIES.get(0)),
-            new Card(2,"Q2", "A2", CATEGORIES.get(0)),
-            new Card(3,"Q3", "A3", CATEGORIES.get(1))
-    );
+    private final List<User> USERS = DataConstants.USERS;
+    private final List<Category> CATEGORIES = DataConstants.CATEGORIES;
+    private final List<Card> CARDS = DataConstants.CARDS;
 }
