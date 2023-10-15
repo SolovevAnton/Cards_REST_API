@@ -3,7 +3,7 @@ package com.solovev.dao.daoImplementations;
 import com.solovev.DBSetUpAndTearDown;
 import com.solovev.dao.DAO;
 import com.solovev.model.User;
-import com.solovev.servlet.DataConstants;
+import com.solovev.DataConstants;
 import org.junit.jupiter.api.*;
 
 import javax.persistence.Table;

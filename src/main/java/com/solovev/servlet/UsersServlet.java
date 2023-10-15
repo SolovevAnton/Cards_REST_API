@@ -16,7 +16,7 @@ public class UsersServlet extends AbstractServlet<User> {
         super(User.class, new UserDao());
     }
     @Override
-    protected Optional<StrategyGet<User>> defineGetStrategy(Map<String, String[]> parametersMap) {
+    protected Optional<StrategyGet<User>> defineStrategyOfGet(Map<String, String[]> parametersMap) {
         StrategyGet<User> chosenStrategy = null;
         if(parametersMap.containsKey("id")){
             chosenStrategy = new StrategyGetById<>(parametersMap, new UserDao());

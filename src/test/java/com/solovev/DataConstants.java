@@ -1,4 +1,4 @@
-package com.solovev.servlet;
+package com.solovev;
 
 import com.solovev.model.Card;
 import com.solovev.model.Category;

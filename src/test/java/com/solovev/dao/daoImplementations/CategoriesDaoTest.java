@@ -3,7 +3,7 @@ package com.solovev.dao.daoImplementations;
 import com.solovev.DBSetUpAndTearDown;
 import com.solovev.model.Category;
 import com.solovev.model.User;
-import com.solovev.servlet.DataConstants;
+import com.solovev.DataConstants;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;

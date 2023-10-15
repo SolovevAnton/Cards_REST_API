@@ -1,5 +1,7 @@
 package com.solovev.servlet;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.solovev.DBSetUpAndTearDown;
 import com.solovev.dao.DAO;
 import com.solovev.dao.daoImplementations.UserDao;
@@ -20,9 +22,7 @@ import org.mockito.quality.Strictness;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.*;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
@@ -80,6 +80,7 @@ public class UsersServletTest {
 
             assertAll(() -> usersServlet.doGet(request, response));
         }
+
         @Test
         public void doGetWithCorruptedId() throws IOException {
             String idToCheck = "NaN";
@@ -91,9 +92,10 @@ public class UsersServletTest {
             ResponseResult<User> expectedResp = new ResponseResult<>("java.lang.NumberFormatException: For input string: \"NaN\"");
             assertEquals(expectedResp.jsonToString(), stringWriter.toString());
         }
+
         @Test
         public void doGetWithNotUniqueId() throws IOException {
-            Map<String, String[]> parameterMap = Map.of("id", new String[]{"1","2"}); // both IDs exist
+            Map<String, String[]> parameterMap = Map.of("id", new String[]{"1", "2"}); // both IDs exist
             when(request.getParameterMap()).thenReturn(parameterMap);
 
             usersServlet.doGet(request, response);
@@ -116,6 +118,7 @@ public class UsersServletTest {
             ResponseResult<User> expectedResp = new ResponseResult<>(expectedUser);
             assertEquals(expectedResp.jsonToString(), stringWriter.toString());
         }
+
         @Test
         public void doGetWithPasswordAndLoginNotFound() throws IOException {
             User expectedUser = USERS.get(0);
@@ -131,8 +134,9 @@ public class UsersServletTest {
             assertEquals(expectedResp.jsonToString(), stringWriter.toString());
         }
     }
+
     @Nested
-    public class doDeleteTests{
+    public class doDeleteTests {
         @Test
         public void deleteSuccess() throws IOException {
             User expectedUser = USERS.get(0);
@@ -147,8 +151,9 @@ public class UsersServletTest {
             assertFalse(userDAO.get().contains(expectedUser));
 
             //checks deleted only one
-            assertEquals(originalSize-1,userDAO.get().size());
+            assertEquals(originalSize - 1, userDAO.get().size());
         }
+
         @ParameterizedTest
         @ValueSource(ints = {0, 4})
         public void deleteNotFound(int nonExistentId) throws IOException {
@@ -164,8 +169,9 @@ public class UsersServletTest {
             assertEquals(expectedResp.jsonToString(), stringWriter.toString());
 
             //check no changes;
-            assertEquals(initialCollection,userDAO.get());
+            assertEquals(initialCollection, userDAO.get());
         }
+
         @Test
         public void deleteNoIdProvided() throws IOException {
             when(request.getParameter("id")).thenReturn(null);
@@ -173,6 +179,56 @@ public class UsersServletTest {
             usersServlet.doDelete(request, response);
             ResponseResult<Collection<User>> expectedResp = new ResponseResult<>(usersServlet.getMessageNoId());
             assertEquals(expectedResp.jsonToString(), stringWriter.toString());
+        }
+    }
+
+    @Nested
+    public class doPutTests {
+        private final User userToReplace = USERS.get(0);
+        private final long replacementId = userToReplace.getId();
+        @Test
+        public void doPutJson() throws IOException {
+            User userToReplaceWith = new User(replacementId,"replacedLog","replacedPass","replaced");
+            requestFactory(userToReplaceWith);
+
+            usersServlet.doPut(request,response);
+
+            ResponseResult<User> expectedUser = new ResponseResult<>(userToReplace);
+            assertEquals(expectedUser.jsonToString(),stringWriter.toString());
+            assertEquals(userToReplaceWith,userDAO.get(replacementId).orElse(null));
+            assertFalse(userDAO.get().contains(userToReplace));
+        }
+
+        @Test
+        public void noObjectPresent() throws IOException {
+            when(request.getHeader("Content-Type")).thenReturn("text/html");
+            usersServlet.doPut(request,response);
+            assertEquals(USERS,userDAO.get());
+        }
+
+        @Test
+        public void noIdFoundJsonPut() throws IOException {
+            long nonExistentId = -1;
+            User userToReplaceWith = new User(nonExistentId,"replacedLog","replacedPass","replaced");
+            requestFactory(userToReplaceWith);
+
+            usersServlet.doPut(request,response);
+
+            ResponseResult<User> expectedUser = new ResponseResult<>(usersServlet.getNotFoundIdMsg(nonExistentId));
+            assertEquals(expectedUser.jsonToString(),stringWriter.toString());
+            assertEquals(USERS,userDAO.get());
+        }
+
+        @Test
+        public void constrainViolationJson() throws IOException {
+            User existentUser = USERS.get(1);
+            existentUser.setId(replacementId);
+            requestFactory(existentUser);
+
+            usersServlet.doPut(request,response);
+            ResponseResult<User> expectedUser = new ResponseResult<>(usersServlet.getConstrainViolatedMsg());
+            assertEquals(expectedUser.jsonToString(),stringWriter.toString());
+            assertEquals(USERS,userDAO.get());
         }
     }
 
@@ -184,6 +240,7 @@ public class UsersServletTest {
     private HttpServletResponse response;
     private StringWriter stringWriter;
     private static final DBSetUpAndTearDown dbSetUpAndTearDown = new DBSetUpAndTearDown();
+    private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
 
     @BeforeEach
     public void setUp() throws SQLException, IOException, ClassNotFoundException {
@@ -202,6 +259,13 @@ public class UsersServletTest {
     @AfterEach
     public void tearDown() throws SQLException {
         dbSetUpAndTearDown.dbFactoryAndTablesTearDown();
+    }
+
+    private void requestFactory(User user) throws IOException {
+        when(request.getHeader("Content-Type")).thenReturn("application/json");
+        String jsonObject = objectMapper.writeValueAsString(user);
+        BufferedReader reader = new BufferedReader(new StringReader(jsonObject));
+        when(request.getReader()).thenReturn(reader);
     }
 
     private final List<User> USERS = List.of(

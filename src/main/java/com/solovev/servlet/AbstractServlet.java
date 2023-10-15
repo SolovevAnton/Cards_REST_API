@@ -16,6 +16,7 @@ import java.util.Optional;
 
 abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
     private final String messageNoId = "Please provide object ID";
+    private final String constrainViolatedMsg = "Object violates DB constraint";
     private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
     private final DAO<T> DAO;
     private final Class<T> self;
@@ -48,7 +49,7 @@ abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
             resultWithCollection.setData(DAO.get());
             resp.getWriter().write(resultWithCollection.jsonToString());
         } else {
-            Optional<StrategyGet<T>> strategyGet = defineGetStrategy(parameters);
+            Optional<StrategyGet<T>> strategyGet = defineStrategyOfGet(parameters);
             if (strategyGet.isPresent()) {
                 ResponseResult<T> result = strategyGet.get().getResult();
                 resp.getWriter().write(result.jsonToString());
@@ -56,28 +57,61 @@ abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
         }
     }
 
-    abstract protected Optional<StrategyGet<T>> defineGetStrategy(Map<String, String[]> parametersMap);
+    abstract protected Optional<StrategyGet<T>> defineStrategyOfGet(Map<String, String[]> parametersMap);
 
     /**
      * Deletes object from db by id, if not found returns message
-     * @param req should contain id
+     *
+     * @param req  should contain id
      * @param resp with response result
      * @throws IOException if IO occurs
      */
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        configEncodingAndResponseType(req,resp);
+        configEncodingAndResponseType(req, resp);
         String stringId = req.getParameter("id");
         //returns deleted car or throws
         if (stringId != null) {
-                long id = Long.parseLong(stringId);
-                Optional<T> foundObject = DAO.delete(id);
-                configureResponseResult(foundObject, getNotFoundIdMsg(id));
+            long id = Long.parseLong(stringId);
+            Optional<T> foundObject = DAO.delete(id);
+
+            foundObject.ifPresentOrElse(
+                    object -> responseResult.setData(object),
+                    () -> responseResult.setMessage(getNotFoundIdMsg(id)));
         } else {
             responseResult.setMessage(messageNoId);
         }
         resp.getWriter().write(responseResult.jsonToString());
+    }
 
+    /**
+     * Updates object in the DB based on its id;
+     *
+     * @param req  request must contain JSON object
+     * @param resp response will contain REPLACED object
+     * @throws IOException if IO exc occurs
+     */
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        configEncodingAndResponseType(req, resp);
+        if (isJson(req)) {
+            try {
+                T objectReplacement = objectMapper.readValue(req.getReader(), self);
+                long updateId = objectReplacement.getId();
+
+                Optional<T> oldObject = DAO.get(updateId);
+                if (oldObject.isPresent()) {
+                    DAO.update(objectReplacement);
+                    responseResult.setData(oldObject.get());
+                } else {
+                    responseResult.setMessage(getNotFoundIdMsg(updateId));
+                }
+            } catch (IllegalArgumentException e) {
+                responseResult.setMessage(constrainViolatedMsg);
+            }
+
+            resp.getWriter().write(responseResult.jsonToString());
+        }
     }
 
     /**
@@ -104,20 +138,15 @@ abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
         return header != null && header.contains("application/json");
     }
 
-    /**
-     * If present adds to response result, else writes a message there
-     */
-    private void configureResponseResult(Optional<T> foundElem, String messageIfNotFound) {
-        foundElem.ifPresentOrElse(
-                object -> responseResult.setData(object),
-                () -> responseResult.setMessage(messageIfNotFound));
-    }
-
     public String getNotFoundIdMsg(long id) {
         return "Cannot find object with this ID: " + id;
     }
 
     public String getMessageNoId() {
         return messageNoId;
+    }
+
+    public String getConstrainViolatedMsg() {
+        return constrainViolatedMsg;
     }
 }
