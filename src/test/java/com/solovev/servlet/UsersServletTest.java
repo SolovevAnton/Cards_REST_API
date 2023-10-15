@@ -1,6 +1,8 @@
 package com.solovev.servlet;
 
 import com.solovev.DBSetUpAndTearDown;
+import com.solovev.dao.DAO;
+import com.solovev.dao.daoImplementations.UserDao;
 import com.solovev.dto.ResponseResult;
 import com.solovev.model.User;
 import org.junit.jupiter.api.AfterEach;
@@ -15,8 +17,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import javax.servlet.Servlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -109,7 +110,52 @@ public class UsersServletTest {
             assertEquals(expectedResp.jsonToString(), stringWriter.toString());
         }
     }
+    @Nested
+    public class doDeleteTests{
+        @Test
+        public void deleteSuccess() throws IOException {
+            User expectedUser = USERS.get(0);
+            int originalSize = userDAO.get().size();
+            assumeTrue(userDAO.get().contains(expectedUser));
+            when(request.getParameter("id")).thenReturn(String.valueOf(expectedUser.getId()));
 
+            usersServlet.doDelete(request, response);
+
+            ResponseResult<User> expectedResp = new ResponseResult<>(expectedUser);
+            assertEquals(expectedResp.jsonToString(), stringWriter.toString());
+            assertFalse(userDAO.get().contains(expectedUser));
+
+            //checks deleted only one
+            assertEquals(originalSize-1,userDAO.get().size());
+        }
+        @ParameterizedTest
+        @ValueSource(ints = {0, 4})
+        public void deleteNotFound(int nonExistentId) throws IOException {
+            String idToCheck = String.valueOf(nonExistentId);
+            Collection<User> initialCollection = userDAO.get();
+
+            assumeTrue(userDAO.get(nonExistentId).isEmpty());
+            when(request.getParameter("id")).thenReturn(idToCheck);
+
+            usersServlet.doDelete(request, response);
+
+            ResponseResult<User> expectedResp = new ResponseResult<>(usersServlet.getNotFoundMsg());
+            assertEquals(expectedResp.jsonToString(), stringWriter.toString());
+
+            //check no changes;
+            assertEquals(initialCollection,userDAO.get());
+        }
+        @Test
+        public void deleteNoIdProvided() throws IOException {
+            when(request.getParameter("id")).thenReturn(null);
+
+            usersServlet.doDelete(request, response);
+            ResponseResult<Collection<User>> expectedResp = new ResponseResult<>(usersServlet.getMessageNoId());
+            assertEquals(expectedResp.jsonToString(), stringWriter.toString());
+        }
+    }
+
+    private DAO<User> userDAO = new UserDao();
     private UsersServlet usersServlet = new UsersServlet();
     @Mock
     private HttpServletRequest request;

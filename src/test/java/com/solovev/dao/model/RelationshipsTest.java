@@ -100,7 +100,7 @@ public class RelationshipsTest {
 
     @Test
     public void collectionInitiationInUser() {
-        //working ONLY with lazy fetch
+        //working ONLY with Eager fetch
         Collection<Category> categoriesForFirstUser = List.of(CATEGORIES.get(0), CATEGORIES.get(1));
         Collection<Category> categoriesForSecondUser = List.of(CATEGORIES.get(2));
         User firstUser = userDao.get(1).get();

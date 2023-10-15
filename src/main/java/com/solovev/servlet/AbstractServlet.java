@@ -15,6 +15,7 @@ import java.util.Optional;
 
 abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
     private final String notFoundMsg = "Object with this params wasn't found";
+    private final String messageNoId = "Please provide object ID";
     private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
     private final DAO<T> DAO;
     private final Class<T> self;
@@ -51,9 +52,7 @@ abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
             if (strategyGet.isPresent()) {
                 Optional<T> foundElem = strategyGet.get().getObject();
 
-                foundElem.ifPresentOrElse(
-                        object -> responseResult.setData(object),
-                        () -> responseResult.setMessage(notFoundMsg));
+                configureResponseResult(foundElem);
                 resp.getWriter().write(responseResult.jsonToString());
             }
         }
@@ -66,7 +65,6 @@ abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
     protected interface StrategyGet<T> {
         Optional<T> getObject();
     }
-
     abstract protected Optional<StrategyGet<T>> defineGetStrategy(Map<String, String[]> parametersMap);
 
     protected StrategyGet<T> getById(Map<String, String[]> parametersMap) {
@@ -95,6 +93,28 @@ abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
     }
 
     /**
+     * Deletes object from db by id, if not found returns message
+     * @param req should contain id
+     * @param resp with response result
+     * @throws IOException if IO occurs
+     */
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        configEncodingAndResponseType(req,resp);
+        String stringId = req.getParameter("id");
+        //returns deleted car or throws
+        if (stringId != null) {
+                long id = Long.parseLong(stringId);
+                Optional<T> foundObject = DAO.delete(id);
+                configureResponseResult(foundObject);
+        } else {
+            responseResult.setMessage(messageNoId);
+        }
+        resp.getWriter().write(responseResult.jsonToString());
+
+    }
+
+    /**
      * Configs resp and req to use UTF-8, also reloads repository
      *
      * @param req  to config
@@ -118,7 +138,20 @@ abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
         return header != null && header.contains("application/json");
     }
 
+    /**
+     * If present adds to response result, else writes a message there
+     */
+    private void configureResponseResult(Optional<T> foundElem) {
+        foundElem.ifPresentOrElse(
+                object -> responseResult.setData(object),
+                () -> responseResult.setMessage(notFoundMsg));
+    }
+
     public String getNotFoundMsg() {
         return notFoundMsg;
+    }
+
+    public String getMessageNoId() {
+        return messageNoId;
     }
 }
