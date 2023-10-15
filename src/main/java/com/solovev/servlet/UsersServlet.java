@@ -2,6 +2,9 @@ package com.solovev.servlet;
 
 import com.solovev.dao.daoImplementations.UserDao;
 import com.solovev.model.User;
+import com.solovev.util.StrategyGet;
+import com.solovev.util.StrategyGetById;
+import com.solovev.util.StrategyGetUserByLogAndPass;
 
 import javax.servlet.annotation.WebServlet;
 import java.util.Map;
@@ -16,12 +19,9 @@ public class UsersServlet extends AbstractServlet<User> {
     protected Optional<StrategyGet<User>> defineGetStrategy(Map<String, String[]> parametersMap) {
         StrategyGet<User> chosenStrategy = null;
         if(parametersMap.containsKey("id")){
-            chosenStrategy = getById(parametersMap);
+            chosenStrategy = new StrategyGetById<>(parametersMap, new UserDao());
         } else if (parametersMap.containsKey("password") && parametersMap.containsKey("login")) {
-            String login = getOneValue(parametersMap,"login");
-            String pass = getOneValue(parametersMap,"password");
-            UserDao userDao = new UserDao();
-            chosenStrategy = () -> userDao.getUserByLoginAndPass(login,pass);
+            chosenStrategy = new StrategyGetUserByLogAndPass(parametersMap);
         }
         return Optional.ofNullable(chosenStrategy);
     }

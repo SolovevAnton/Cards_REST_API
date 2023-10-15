@@ -60,7 +60,7 @@ public class UsersServletTest {
 
             usersServlet.doGet(request, response);
 
-            ResponseResult<User> expectedResp = new ResponseResult<>(usersServlet.getNotFoundMsg());
+            ResponseResult<User> expectedResp = new ResponseResult<>(usersServlet.getNotFoundIdMsg(nonExistentId));
             assertEquals(expectedResp.jsonToString(), stringWriter.toString());
         }
 
@@ -79,6 +79,27 @@ public class UsersServletTest {
             when(request.getParameterMap()).thenReturn(parameterMap);
 
             assertAll(() -> usersServlet.doGet(request, response));
+        }
+        @Test
+        public void doGetWithCorruptedId() throws IOException {
+            String idToCheck = "NaN";
+            Map<String, String[]> parameterMap = Map.of("id", new String[]{idToCheck});
+            when(request.getParameterMap()).thenReturn(parameterMap);
+
+            usersServlet.doGet(request, response);
+
+            ResponseResult<User> expectedResp = new ResponseResult<>("java.lang.NumberFormatException: For input string: \"NaN\"");
+            assertEquals(expectedResp.jsonToString(), stringWriter.toString());
+        }
+        @Test
+        public void doGetWithNotUniqueId() throws IOException {
+            Map<String, String[]> parameterMap = Map.of("id", new String[]{"1","2"}); // both IDs exist
+            when(request.getParameterMap()).thenReturn(parameterMap);
+
+            usersServlet.doGet(request, response);
+
+            ResponseResult<User> expectedResp = new ResponseResult<>("java.lang.IllegalArgumentException: all values must be unique");
+            assertEquals(expectedResp.jsonToString(), stringWriter.toString());
         }
 
         @Test
@@ -106,7 +127,7 @@ public class UsersServletTest {
 
             usersServlet.doGet(request, response);
 
-            ResponseResult<User> expectedResp = new ResponseResult<>(usersServlet.getNotFoundMsg());
+            ResponseResult<User> expectedResp = new ResponseResult<>("Cannot find user with this login and password");
             assertEquals(expectedResp.jsonToString(), stringWriter.toString());
         }
     }
@@ -139,7 +160,7 @@ public class UsersServletTest {
 
             usersServlet.doDelete(request, response);
 
-            ResponseResult<User> expectedResp = new ResponseResult<>(usersServlet.getNotFoundMsg());
+            ResponseResult<User> expectedResp = new ResponseResult<>(usersServlet.getNotFoundIdMsg(nonExistentId));
             assertEquals(expectedResp.jsonToString(), stringWriter.toString());
 
             //check no changes;

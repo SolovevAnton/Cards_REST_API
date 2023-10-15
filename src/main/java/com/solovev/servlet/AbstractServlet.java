@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.solovev.dao.DAO;
 import com.solovev.dto.DTO;
 import com.solovev.dto.ResponseResult;
+import com.solovev.util.StrategyGet;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -14,7 +15,6 @@ import java.util.Map;
 import java.util.Optional;
 
 abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
-    private final String notFoundMsg = "Object with this params wasn't found";
     private final String messageNoId = "Please provide object ID";
     private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
     private final DAO<T> DAO;
@@ -50,47 +50,13 @@ abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
         } else {
             Optional<StrategyGet<T>> strategyGet = defineGetStrategy(parameters);
             if (strategyGet.isPresent()) {
-                Optional<T> foundElem = strategyGet.get().getObject();
-
-                configureResponseResult(foundElem);
-                resp.getWriter().write(responseResult.jsonToString());
+                ResponseResult<T> result = strategyGet.get().getResult();
+                resp.getWriter().write(result.jsonToString());
             }
         }
     }
 
-    /**
-     * Interface to get object from DB based on some params
-     */
-    @FunctionalInterface
-    protected interface StrategyGet<T> {
-        Optional<T> getObject();
-    }
     abstract protected Optional<StrategyGet<T>> defineGetStrategy(Map<String, String[]> parametersMap);
-
-    protected StrategyGet<T> getById(Map<String, String[]> parametersMap) {
-        return () -> {
-            String idString = getOneValue(parametersMap,"id");
-            long id = Long.parseLong(idString);
-            return DAO.get(id);
-        };
-    }
-
-    /**
-     * Checks if string contains one value, if it does return is else throws
-     * @param parametersMap map to get value from
-     * @param value to get
-     * @return single value
-     * @throws IllegalArgumentException if there is more than one value or none found
-     */
-    protected String getOneValue(Map<String, String[]> parametersMap, String value) throws IllegalArgumentException{
-        String[] values = parametersMap.get(value);
-        if(values == null){
-            throw new IllegalArgumentException("value not found");
-        } else if (values.length > 1) {
-            throw new IllegalArgumentException("all values must be unique");
-        }
-        return values[0];
-    }
 
     /**
      * Deletes object from db by id, if not found returns message
@@ -106,7 +72,7 @@ abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
         if (stringId != null) {
                 long id = Long.parseLong(stringId);
                 Optional<T> foundObject = DAO.delete(id);
-                configureResponseResult(foundObject);
+                configureResponseResult(foundObject, getNotFoundIdMsg(id));
         } else {
             responseResult.setMessage(messageNoId);
         }
@@ -141,14 +107,14 @@ abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
     /**
      * If present adds to response result, else writes a message there
      */
-    private void configureResponseResult(Optional<T> foundElem) {
+    private void configureResponseResult(Optional<T> foundElem, String messageIfNotFound) {
         foundElem.ifPresentOrElse(
                 object -> responseResult.setData(object),
-                () -> responseResult.setMessage(notFoundMsg));
+                () -> responseResult.setMessage(messageIfNotFound));
     }
 
-    public String getNotFoundMsg() {
-        return notFoundMsg;
+    public String getNotFoundIdMsg(long id) {
+        return "Cannot find object with this ID: " + id;
     }
 
     public String getMessageNoId() {
