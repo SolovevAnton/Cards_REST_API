@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.solovev.dao.DAO;
 import com.solovev.dto.DTO;
 import com.solovev.dto.ResponseResult;
-import com.solovev.util.StrategyGet;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -28,8 +27,8 @@ abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
     }
 
     /**
-     * gets one or all users based on the given args;<br>
-     * one user if in args there are only users id or log and pass;<br>
+     * gets one or all objects based on the given args;<br>
+     * one object if accessed by id or other params<br>
      * returns all users if id is not present;<br>
      * if nothing found returns response result with the message<br>
      * all returns are in the form of response result object in json format
@@ -41,23 +40,45 @@ abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         configEncodingAndResponseType(req, resp);
-        Map<String,String[]> parameters = req.getParameterMap();
+        Map<String, String[]> parameters = req.getParameterMap();
 
         if (parameters.isEmpty()) {
             ResponseResult<Collection<T>> resultWithCollection = new ResponseResult<>();
             resultWithCollection.setData(DAO.get());
             resp.getWriter().write(resultWithCollection.jsonToString());
         } else {
-            StrategyGet<T> strategyGet = defineGetStrategy(parameters);
-            Optional<T> elem = strategyGet.getObject(parameters);
-            elem.ifPresentOrElse(o -> responseResult.setData(o),
-                    () -> responseResult.setMessage(notFoundMsg));
-            resp.getWriter().write(responseResult.jsonToString());
+            Optional<StrategyGet<T>> strategyGet = defineGetStrategy(parameters);
+            if (strategyGet.isPresent()) {
+                Optional<T> foundElem = strategyGet.get().getObject(parameters);
+
+                foundElem.ifPresentOrElse(
+                        object -> responseResult.setData(object),
+                        () -> responseResult.setMessage(notFoundMsg));
+                resp.getWriter().write(responseResult.jsonToString());
+            }
         }
-
     }
-    abstract protected StrategyGet<T> defineGetStrategy(Map<String,String[]> parametersMap);
 
+    /**
+     * Interface to get object from DB based on some params
+     */
+    @FunctionalInterface
+    protected interface StrategyGet<T> {
+        Optional<T> getObject(Map<String, String[]> parametersMap);
+    }
+
+    abstract protected Optional<StrategyGet<T>> defineGetStrategy(Map<String, String[]> parametersMap);
+
+    protected StrategyGet<T> getById(Map<String, String[]> parametersMap) {
+        return (parameters) -> {
+            String[] idString = parametersMap.get("id");
+            if (idString.length > 1) {
+                throw new IllegalArgumentException("cannot exceed one id in request");
+            }
+            long id = Long.parseLong(idString[0]);
+            return DAO.get(id);
+        };
+    }
 
     /**
      * Configs resp and req to use UTF-8, also reloads repository

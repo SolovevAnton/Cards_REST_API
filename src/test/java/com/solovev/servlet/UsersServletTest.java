@@ -25,7 +25,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -38,7 +40,8 @@ public class UsersServletTest {
         @Test
         public void doGetByIdSuccess() throws IOException {
             User expectedUser = USERS.get(0);
-            when(request.getParameter("id")).thenReturn(String.valueOf(expectedUser.getId()));
+            Map<String, String[]> parameterMap = Map.of("id", new String[]{String.valueOf(expectedUser.getId())});
+            when(request.getParameterMap()).thenReturn(parameterMap);
 
             usersServlet.doGet(request, response);
 
@@ -47,23 +50,34 @@ public class UsersServletTest {
         }
 
         @ParameterizedTest
-        @ValueSource(ints = {0,4})
+        @ValueSource(ints = {0, 4})
         public void doGetByIdNotFound(int nonExistentId) throws IOException {
             String idToCheck = String.valueOf(nonExistentId);
-            when(request.getParameter("id")).thenReturn(idToCheck);
+
+            Map<String, String[]> parameterMap = Map.of("id", new String[]{idToCheck});
+            when(request.getParameterMap()).thenReturn(parameterMap);
 
             usersServlet.doGet(request, response);
 
-            ResponseResult<User> expectedResp = new ResponseResult<>(usersServlet.notFoundIdMessage(idToCheck));
+            ResponseResult<User> expectedResp = new ResponseResult<>(usersServlet.getNotFoundMsg());
             assertEquals(expectedResp.jsonToString(), stringWriter.toString());
         }
+
         @Test
         public void doGetAll() throws IOException {
-            when(request.getParameter("id")).thenReturn(null);
+            when(request.getParameterMap()).thenReturn(Collections.emptyMap());
 
             usersServlet.doGet(request, response);
             ResponseResult<Collection<User>> expectedResp = new ResponseResult<>(USERS);
             assertEquals(expectedResp.jsonToString(), stringWriter.toString());
+        }
+
+        @Test
+        public void doGetWithNotExistentStrategy() throws IOException {
+            Map<String, String[]> parameterMap = Map.of("login", new String[]{String.valueOf(USERS.get(0).getLogin())});
+            when(request.getParameterMap()).thenReturn(parameterMap);
+
+            assertAll(() -> usersServlet.doGet(request, response));
         }
     }
 
