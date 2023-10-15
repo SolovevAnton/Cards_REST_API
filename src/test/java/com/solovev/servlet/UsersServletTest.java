@@ -73,11 +73,40 @@ public class UsersServletTest {
         }
 
         @Test
-        public void doGetWithNotExistentStrategy() throws IOException {
-            Map<String, String[]> parameterMap = Map.of("login", new String[]{String.valueOf(USERS.get(0).getLogin())});
+        public void doGetWithNotExistentStrategy() {
+            Map<String, String[]> parameterMap = Map.of("login", new String[]{USERS.get(0).getLogin()});
             when(request.getParameterMap()).thenReturn(parameterMap);
 
             assertAll(() -> usersServlet.doGet(request, response));
+        }
+
+        @Test
+        public void doGetWithPasswordAndLoginSuccess() throws IOException {
+            User expectedUser = USERS.get(0);
+            Map<String, String[]> parameterMap = Map.of(
+                    "login", new String[]{expectedUser.getLogin()},
+                    "password", new String[]{expectedUser.getPassword()});
+
+            when(request.getParameterMap()).thenReturn(parameterMap);
+
+            usersServlet.doGet(request, response);
+
+            ResponseResult<User> expectedResp = new ResponseResult<>(expectedUser);
+            assertEquals(expectedResp.jsonToString(), stringWriter.toString());
+        }
+        @Test
+        public void doGetWithPasswordAndLoginNotFound() throws IOException {
+            User expectedUser = USERS.get(0);
+            Map<String, String[]> parameterMap = Map.of(
+                    "login", new String[]{expectedUser.getLogin()},
+                    "password", new String[]{"non existent pass"});
+
+            when(request.getParameterMap()).thenReturn(parameterMap);
+
+            usersServlet.doGet(request, response);
+
+            ResponseResult<User> expectedResp = new ResponseResult<>(usersServlet.getNotFoundMsg());
+            assertEquals(expectedResp.jsonToString(), stringWriter.toString());
         }
     }
 

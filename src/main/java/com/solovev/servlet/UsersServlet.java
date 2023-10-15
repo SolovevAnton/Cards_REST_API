@@ -17,6 +17,11 @@ public class UsersServlet extends AbstractServlet<User> {
         StrategyGet<User> chosenStrategy = null;
         if(parametersMap.containsKey("id")){
             chosenStrategy = getById(parametersMap);
+        } else if (parametersMap.containsKey("password") && parametersMap.containsKey("login")) {
+            String login = getOneValue(parametersMap,"login");
+            String pass = getOneValue(parametersMap,"password");
+            UserDao userDao = new UserDao();
+            chosenStrategy = () -> userDao.getUserByLoginAndPass(login,pass);
         }
         return Optional.ofNullable(chosenStrategy);
     }

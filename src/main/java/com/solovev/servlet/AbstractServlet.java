@@ -16,8 +16,8 @@ import java.util.Optional;
 abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
     private final String notFoundMsg = "Object with this params wasn't found";
     private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
-    private final Class<T> self;
     private final DAO<T> DAO;
+    private final Class<T> self;
     private ResponseResult<T> responseResult;
 
     public AbstractServlet(Class<T> self, DAO<T> DAO) {
@@ -49,7 +49,7 @@ abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
         } else {
             Optional<StrategyGet<T>> strategyGet = defineGetStrategy(parameters);
             if (strategyGet.isPresent()) {
-                Optional<T> foundElem = strategyGet.get().getObject(parameters);
+                Optional<T> foundElem = strategyGet.get().getObject();
 
                 foundElem.ifPresentOrElse(
                         object -> responseResult.setData(object),
@@ -64,20 +64,34 @@ abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
      */
     @FunctionalInterface
     protected interface StrategyGet<T> {
-        Optional<T> getObject(Map<String, String[]> parametersMap);
+        Optional<T> getObject();
     }
 
     abstract protected Optional<StrategyGet<T>> defineGetStrategy(Map<String, String[]> parametersMap);
 
     protected StrategyGet<T> getById(Map<String, String[]> parametersMap) {
-        return (parameters) -> {
-            String[] idString = parametersMap.get("id");
-            if (idString.length > 1) {
-                throw new IllegalArgumentException("cannot exceed one id in request");
-            }
-            long id = Long.parseLong(idString[0]);
+        return () -> {
+            String idString = getOneValue(parametersMap,"id");
+            long id = Long.parseLong(idString);
             return DAO.get(id);
         };
+    }
+
+    /**
+     * Checks if string contains one value, if it does return is else throws
+     * @param parametersMap map to get value from
+     * @param value to get
+     * @return single value
+     * @throws IllegalArgumentException if there is more than one value or none found
+     */
+    protected String getOneValue(Map<String, String[]> parametersMap, String value) throws IllegalArgumentException{
+        String[] values = parametersMap.get(value);
+        if(values == null){
+            throw new IllegalArgumentException("value not found");
+        } else if (values.length > 1) {
+            throw new IllegalArgumentException("all values must be unique");
+        }
+        return values[0];
     }
 
     /**
