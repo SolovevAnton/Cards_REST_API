@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -30,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.mockito.Mockito.when;
 
@@ -222,12 +224,49 @@ public class UsersServletTest {
         @Test
         public void constrainViolationJson() throws IOException {
             User existentUser = USERS.get(1);
-            existentUser.setId(replacementId);
-            requestFactory(existentUser);
+            User toReplace = new User(replacementId, existentUser.getLogin(),existentUser.getPassword(),existentUser.getName());
+            requestFactory(toReplace);
 
             usersServlet.doPut(request,response);
-            ResponseResult<User> expectedUser = new ResponseResult<>(usersServlet.getConstrainViolatedMsg());
-            assertEquals(expectedUser.jsonToString(),stringWriter.toString());
+
+            ResponseResult<User> expectedResult = new ResponseResult<>(usersServlet.getConstrainViolatedMsg());
+            assertEquals(expectedResult.jsonToString(),stringWriter.toString());
+            assertEquals(USERS,userDAO.get());
+        }
+    }
+    @Nested
+    public class doPostTests{
+        @Test
+        public void doPostJson() throws IOException, ServletException {
+            long possibleId = USERS.size() + 1;
+            User userToAdd = new User(possibleId,"addedLog", "addedPass", "addedName");
+            assumeFalse(userDAO.get().contains(userToAdd));
+            requestFactory(userToAdd);
+
+            usersServlet.doPost(request,response);
+
+            ResponseResult<User> expectedResp = new ResponseResult<>(userToAdd);
+
+            assertEquals(expectedResp.jsonToString(), stringWriter.toString());
+            assertEquals(userToAdd, userDAO.get(possibleId).get());
+            assertEquals(possibleId,userDAO.get().size());
+        }
+        @Test
+        public void noObjectPresent() throws IOException, ServletException {
+            when(request.getHeader("Content-Type")).thenReturn("text/html");
+            usersServlet.doPost(request,response);
+            assertEquals(USERS,userDAO.get());
+        }
+        @Test
+        public void postConstrainViolation() throws IOException {
+            User existentUser = USERS.get(1);
+            User toReplace = new User(0, existentUser.getLogin(),existentUser.getPassword(),existentUser.getName());
+            requestFactory(toReplace);
+
+            usersServlet.doPost(request,response);
+
+            ResponseResult<User> expectedResult = new ResponseResult<>(usersServlet.getConstrainViolatedMsg());
+            assertEquals(expectedResult.jsonToString(),stringWriter.toString());
             assertEquals(USERS,userDAO.get());
         }
     }

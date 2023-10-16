@@ -81,6 +81,7 @@ abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
         } else {
             responseResult.setMessage(messageNoId);
         }
+
         resp.getWriter().write(responseResult.jsonToString());
     }
 
@@ -112,6 +113,27 @@ abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
 
             resp.getWriter().write(responseResult.jsonToString());
         }
+    }
+
+    /**
+     *
+     * @param req  must contain json object to add
+     * @param resp response with posted object if success with message otherwise
+     * @throws IOException if IO exc occurs
+     */
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        configEncodingAndResponseType(req, resp);
+        if (isJson(req)) {
+            try{
+                T objectToAdd = objectMapper.readValue(req.getReader(),self);
+                DAO.add(objectToAdd);
+                responseResult.setData(objectToAdd);
+            } catch (IllegalArgumentException e){
+                responseResult.setMessage(constrainViolatedMsg);
+            }
+        }
+        resp.getWriter().write(responseResult.jsonToString());
     }
 
     /**
