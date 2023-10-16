@@ -1,8 +1,8 @@
 package com.solovev.servlet;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.solovev.DBSetUpAndTearDown;
+import com.solovev.DataConstants;
 import com.solovev.dao.DAO;
 import com.solovev.dao.daoImplementations.UserDao;
 import com.solovev.dto.ResponseResult;
@@ -22,7 +22,6 @@ import org.mockito.quality.Strictness;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import java.io.*;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -180,7 +179,23 @@ public class UsersServletTest {
 
             usersServlet.doDelete(request, response);
             ResponseResult<Collection<User>> expectedResp = new ResponseResult<>(usersServlet.getMessageNoId());
+
             assertEquals(expectedResp.jsonToString(), stringWriter.toString());
+            //check no changes;
+            assertEquals(USERS, userDAO.get());
+        }
+
+        @Test
+        public void deleteWithCorruptedId() throws IOException {
+            String idToCheck = "NaN";
+            when(request.getParameter("id")).thenReturn(idToCheck);
+
+            usersServlet.doDelete(request, response);
+
+            ResponseResult<User> expectedResp = new ResponseResult<>("java.lang.NumberFormatException: For input string: \"NaN\"");
+            assertEquals(expectedResp.jsonToString(), stringWriter.toString());
+            //check no changes;
+            assertEquals(USERS, userDAO.get());
         }
     }
 
@@ -188,86 +203,90 @@ public class UsersServletTest {
     public class doPutTests {
         private final User userToReplace = USERS.get(0);
         private final long replacementId = userToReplace.getId();
+
         @Test
         public void doPutJson() throws IOException {
-            User userToReplaceWith = new User(replacementId,"replacedLog","replacedPass","replaced");
+            User userToReplaceWith = new User(replacementId, "replacedLog", "replacedPass", "replaced");
             requestFactory(userToReplaceWith);
 
-            usersServlet.doPut(request,response);
+            usersServlet.doPut(request, response);
 
             ResponseResult<User> expectedUser = new ResponseResult<>(userToReplace);
-            assertEquals(expectedUser.jsonToString(),stringWriter.toString());
-            assertEquals(userToReplaceWith,userDAO.get(replacementId).orElse(null));
+            assertEquals(expectedUser.jsonToString(), stringWriter.toString());
+            assertEquals(userToReplaceWith, userDAO.get(replacementId).orElse(null));
             assertFalse(userDAO.get().contains(userToReplace));
         }
 
         @Test
         public void noObjectPresent() throws IOException {
             when(request.getHeader("Content-Type")).thenReturn("text/html");
-            usersServlet.doPut(request,response);
-            assertEquals(USERS,userDAO.get());
+            usersServlet.doPut(request, response);
+            assertEquals(USERS, userDAO.get());
         }
 
         @Test
         public void noIdFoundJsonPut() throws IOException {
             long nonExistentId = -1;
-            User userToReplaceWith = new User(nonExistentId,"replacedLog","replacedPass","replaced");
+            User userToReplaceWith = new User(nonExistentId, "replacedLog", "replacedPass", "replaced");
             requestFactory(userToReplaceWith);
 
-            usersServlet.doPut(request,response);
+            usersServlet.doPut(request, response);
 
             ResponseResult<User> expectedUser = new ResponseResult<>(usersServlet.getNotFoundIdMsg(nonExistentId));
-            assertEquals(expectedUser.jsonToString(),stringWriter.toString());
-            assertEquals(USERS,userDAO.get());
+            assertEquals(expectedUser.jsonToString(), stringWriter.toString());
+            assertEquals(USERS, userDAO.get());
         }
 
         @Test
         public void constrainViolationJson() throws IOException {
             User existentUser = USERS.get(1);
-            User toReplace = new User(replacementId, existentUser.getLogin(),existentUser.getPassword(),existentUser.getName());
+            User toReplace = new User(replacementId, existentUser.getLogin(), existentUser.getPassword(), existentUser.getName());
             requestFactory(toReplace);
 
-            usersServlet.doPut(request,response);
+            usersServlet.doPut(request, response);
 
             ResponseResult<User> expectedResult = new ResponseResult<>(usersServlet.getConstrainViolatedMsg());
-            assertEquals(expectedResult.jsonToString(),stringWriter.toString());
-            assertEquals(USERS,userDAO.get());
+            assertEquals(expectedResult.jsonToString(), stringWriter.toString());
+            assertEquals(USERS, userDAO.get());
         }
     }
+
     @Nested
-    public class doPostTests{
+    public class doPostTests {
         @Test
         public void doPostJson() throws IOException, ServletException {
             long possibleId = USERS.size() + 1;
-            User userToAdd = new User(possibleId,"addedLog", "addedPass", "addedName");
+            User userToAdd = new User(possibleId, "addedLog", "addedPass", "addedName");
             assumeFalse(userDAO.get().contains(userToAdd));
             requestFactory(userToAdd);
 
-            usersServlet.doPost(request,response);
+            usersServlet.doPost(request, response);
 
             ResponseResult<User> expectedResp = new ResponseResult<>(userToAdd);
 
             assertEquals(expectedResp.jsonToString(), stringWriter.toString());
             assertEquals(userToAdd, userDAO.get(possibleId).get());
-            assertEquals(possibleId,userDAO.get().size());
+            assertEquals(possibleId, userDAO.get().size());
         }
+
         @Test
         public void noObjectPresent() throws IOException, ServletException {
             when(request.getHeader("Content-Type")).thenReturn("text/html");
-            usersServlet.doPost(request,response);
-            assertEquals(USERS,userDAO.get());
+            usersServlet.doPost(request, response);
+            assertEquals(USERS, userDAO.get());
         }
+
         @Test
         public void postConstrainViolation() throws IOException {
             User existentUser = USERS.get(1);
-            User toReplace = new User(0, existentUser.getLogin(),existentUser.getPassword(),existentUser.getName());
+            User toReplace = new User(0, existentUser.getLogin(), existentUser.getPassword(), existentUser.getName());
             requestFactory(toReplace);
 
-            usersServlet.doPost(request,response);
+            usersServlet.doPost(request, response);
 
             ResponseResult<User> expectedResult = new ResponseResult<>(usersServlet.getConstrainViolatedMsg());
-            assertEquals(expectedResult.jsonToString(),stringWriter.toString());
-            assertEquals(USERS,userDAO.get());
+            assertEquals(expectedResult.jsonToString(), stringWriter.toString());
+            assertEquals(USERS, userDAO.get());
         }
     }
 
@@ -307,9 +326,5 @@ public class UsersServletTest {
         when(request.getReader()).thenReturn(reader);
     }
 
-    private final List<User> USERS = List.of(
-            new User(1, "firstLog", "firstPass", "first"),
-            new User(2, "secondLog", "secondPass", "second"),
-            new User(3, "thirdLog", "thirdPass", "third")
-    );
+    private final List<User> USERS = DataConstants.USERS;
 }

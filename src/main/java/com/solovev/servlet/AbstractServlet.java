@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
@@ -18,14 +17,14 @@ abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
     private final String messageNoId = "Please provide object ID";
     private final String constrainViolatedMsg = "Object violates DB constraint";
     private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
-    private final DAO<T> DAO;
+    private final DAO<T> dao;
     private final Class<T> self;
     private ResponseResult<T> responseResult;
 
-    public AbstractServlet(Class<T> self, DAO<T> DAO) {
+    public AbstractServlet(Class<T> self, DAO<T> dao) {
         super();
         this.self = self;
-        this.DAO = DAO;
+        this.dao = dao;
     }
 
     /**
@@ -42,22 +41,17 @@ abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         configEncodingAndResponseType(req, resp);
-        Map<String, String[]> parameters = req.getParameterMap();
 
-        if (parameters.isEmpty()) {
-            ResponseResult<Collection<T>> resultWithCollection = new ResponseResult<>();
-            resultWithCollection.setData(DAO.get());
-            resp.getWriter().write(resultWithCollection.jsonToString());
-        } else {
-            Optional<StrategyGet<T>> strategyGet = defineStrategyOfGet(parameters);
-            if (strategyGet.isPresent()) {
-                ResponseResult<T> result = strategyGet.get().getResult();
-                resp.getWriter().write(result.jsonToString());
-            }
+        Map<String, String[]> parameters = req.getParameterMap();
+        Optional<StrategyGet<?>> strategyGet = defineStrategyOfGet(parameters);
+
+        if (strategyGet.isPresent()) {
+            ResponseResult<?> result = strategyGet.get().getResult();
+            resp.getWriter().write(result.jsonToString());
         }
     }
 
-    abstract protected Optional<StrategyGet<T>> defineStrategyOfGet(Map<String, String[]> parametersMap);
+    abstract protected Optional<StrategyGet<?>> defineStrategyOfGet(Map<String, String[]> parametersMap);
 
     /**
      * Deletes object from db by id, if not found returns message
@@ -72,12 +66,17 @@ abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
         String stringId = req.getParameter("id");
         //returns deleted car or throws
         if (stringId != null) {
-            long id = Long.parseLong(stringId);
-            Optional<T> foundObject = DAO.delete(id);
+            try {
+                long id = Long.parseLong(stringId);
+                Optional<T> foundObject = dao.delete(id);
 
-            foundObject.ifPresentOrElse(
-                    object -> responseResult.setData(object),
-                    () -> responseResult.setMessage(getNotFoundIdMsg(id)));
+                foundObject.ifPresentOrElse(
+                        object -> responseResult.setData(object),
+                        () -> responseResult.setMessage(getNotFoundIdMsg(id)));
+
+            } catch (NumberFormatException e) {
+                responseResult.setMessage(e.toString());
+            }
         } else {
             responseResult.setMessage(messageNoId);
         }
@@ -100,9 +99,9 @@ abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
                 T objectReplacement = objectMapper.readValue(req.getReader(), self);
                 long updateId = objectReplacement.getId();
 
-                Optional<T> oldObject = DAO.get(updateId);
+                Optional<T> oldObject = dao.get(updateId);
                 if (oldObject.isPresent()) {
-                    DAO.update(objectReplacement);
+                    dao.update(objectReplacement);
                     responseResult.setData(oldObject.get());
                 } else {
                     responseResult.setMessage(getNotFoundIdMsg(updateId));
@@ -116,7 +115,6 @@ abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
     }
 
     /**
-     *
      * @param req  must contain json object to add
      * @param resp response with posted object if success with message otherwise
      * @throws IOException if IO exc occurs
@@ -125,11 +123,11 @@ abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         configEncodingAndResponseType(req, resp);
         if (isJson(req)) {
-            try{
-                T objectToAdd = objectMapper.readValue(req.getReader(),self);
-                DAO.add(objectToAdd);
+            try {
+                T objectToAdd = objectMapper.readValue(req.getReader(), self);
+                dao.add(objectToAdd);
                 responseResult.setData(objectToAdd);
-            } catch (IllegalArgumentException e){
+            } catch (IllegalArgumentException e) {
                 responseResult.setMessage(constrainViolatedMsg);
             }
         }
@@ -170,5 +168,9 @@ abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
 
     public String getConstrainViolatedMsg() {
         return constrainViolatedMsg;
+    }
+
+    public DAO<T> getDao() {
+        return dao;
     }
 }
