@@ -23,8 +23,8 @@ public class StrategyGetById<T extends DTO> extends StrategyGet<T> {
             Optional<T> foundObject = dao.get(id);
             configureResponseResult(foundObject, "Cannot find object with this ID: " + idInput);
         } catch (IllegalArgumentException e){
-            responseResult.setMessage(e.toString());
+            getResponseResult().setMessage(e.toString());
         }
-        return responseResult;
+        return getResponseResult();
     }
 }

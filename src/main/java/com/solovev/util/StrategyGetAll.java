@@ -17,8 +17,8 @@ public class StrategyGetAll<T extends DTO> extends StrategyGet<Collection<T>> {
 
     @Override
     public ResponseResult<Collection<T>> getResult() {
-        responseResult.setData(dao.get());
-        return responseResult;
+        getResponseResult().setData(dao.get());
+        return getResponseResult();
     }
 }
 

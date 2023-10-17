@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 
 public abstract class StrategyGet<T> {
-    protected final ResponseResult<T> responseResult = new ResponseResult<>();
+    private final ResponseResult<T> responseResult = new ResponseResult<>();
     private final Map<String,String[]> parametersMap;
 
     public StrategyGet(Map<String, String[]> parametersMap) {
@@ -44,4 +44,7 @@ public abstract class StrategyGet<T> {
                 () -> responseResult.setMessage(messageIfNotFound));
     }
 
+    public ResponseResult<T> getResponseResult() {
+        return responseResult;
+    }
 }
