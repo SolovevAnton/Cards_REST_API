@@ -1,5 +1,6 @@
 package com.solovev.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.solovev.dto.DTO;
 import lombok.*;
 
@@ -29,6 +30,7 @@ public class User implements DTO {
     @Column(name = "registration_date", updatable = false)
     private final LocalDate registrationDate = LocalDate.now();
 
+    @JsonIgnore
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @OneToMany(mappedBy = "user",orphanRemoval = true,cascade = CascadeType.ALL,fetch = FetchType.EAGER)

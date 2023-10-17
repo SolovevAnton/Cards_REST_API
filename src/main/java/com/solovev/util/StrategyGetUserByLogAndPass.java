@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Optional;
 
 public class StrategyGetUserByLogAndPass extends StrategyGet<User> {
-    private final UserDao userDao = new UserDao();
     public StrategyGetUserByLogAndPass(Map<String, String[]> parametersMap) {
         super(parametersMap);
     }
@@ -18,11 +17,11 @@ public class StrategyGetUserByLogAndPass extends StrategyGet<User> {
         try{
             String login = getOneValue("login");
             String pass = getOneValue("password");
-            Optional<User> foundUser = userDao.getUserByLoginAndPass(login,pass);
+            Optional<User> foundUser = new UserDao().getUserByLoginAndPass(login,pass);
             configureResponseResult(foundUser, "Cannot find user with this login and password");
         } catch (IllegalArgumentException e){
-            responseResult.setMessage(e.getMessage());
+            getResponseResult().setMessage(e.getMessage());
         }
-        return responseResult;
+        return getResponseResult();
     }
 }

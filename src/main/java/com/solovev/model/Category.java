@@ -1,5 +1,6 @@
 package com.solovev.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.solovev.dto.DTO;
 import lombok.*;
 
