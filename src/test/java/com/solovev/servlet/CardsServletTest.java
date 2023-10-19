@@ -31,7 +31,7 @@ import static org.mockito.Mockito.when;
 class CardsServletTest {
     @Nested
     public class getByUserId {
-        private final String parameterName = "categoryId";
+        private final String parameterName = "userId";
         @Test
         public void doGetByUserIdSuccess() throws IOException {
             User toFindCardsFor = USERS.get(0);
@@ -115,7 +115,7 @@ class CardsServletTest {
             assertEquals(expectedResp.jsonToString(), stringWriter.toString());
         }
     }
-    private CardsServlet cardsServlet = new CardsServlet();
+    private final CardsServlet cardsServlet = new CardsServlet();
     @Mock
     private HttpServletRequest request;
     @Mock
