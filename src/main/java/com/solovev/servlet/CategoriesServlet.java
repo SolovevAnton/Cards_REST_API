@@ -4,9 +4,10 @@ import com.solovev.dao.daoImplementations.CategoriesDao;
 import com.solovev.model.Category;
 import com.solovev.util.*;
 
+import javax.servlet.annotation.WebServlet;
 import java.util.Map;
 import java.util.Optional;
-
+@WebServlet("/categories")
 public class CategoriesServlet extends AbstractServlet<Category> {
     public CategoriesServlet() {
         super(Category.class, new CategoriesDao());
