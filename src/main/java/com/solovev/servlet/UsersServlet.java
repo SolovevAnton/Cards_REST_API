@@ -2,10 +2,10 @@ package com.solovev.servlet;
 
 import com.solovev.dao.daoImplementations.UserDao;
 import com.solovev.model.User;
-import com.solovev.util.StrategyGet;
-import com.solovev.util.StrategyGetAll;
-import com.solovev.util.StrategyGetById;
-import com.solovev.util.StrategyGetUserByLogAndPass;
+import com.solovev.util.strategyGet.StrategyGet;
+import com.solovev.util.strategyGet.StrategyGetAll;
+import com.solovev.util.strategyGet.StrategyGetById;
+import com.solovev.util.strategyGet.StrategyGetUserByLogAndPass;
 
 import javax.servlet.annotation.WebServlet;
 import java.util.Map;

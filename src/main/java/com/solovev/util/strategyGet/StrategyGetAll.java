@@ -1,4 +1,4 @@
-package com.solovev.util;
+package com.solovev.util.strategyGet;
 
 import com.solovev.dao.DAO;
 import com.solovev.dto.DTO;

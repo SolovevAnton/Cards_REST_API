@@ -2,7 +2,10 @@ package com.solovev.servlet;
 
 import com.solovev.dao.daoImplementations.CategoriesDao;
 import com.solovev.model.Category;
-import com.solovev.util.*;
+import com.solovev.util.strategyGet.StrategyGet;
+import com.solovev.util.strategyGet.StrategyGetAll;
+import com.solovev.util.strategyGet.StrategyGetById;
+import com.solovev.util.strategyGet.StrategyGetCategoriesByUser;
 
 import javax.servlet.annotation.WebServlet;
 import java.util.Map;

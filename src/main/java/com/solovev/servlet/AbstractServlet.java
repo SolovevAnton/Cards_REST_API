@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.solovev.dao.DAO;
 import com.solovev.dto.DTO;
 import com.solovev.dto.ResponseResult;
-import com.solovev.util.StrategyGet;
+import com.solovev.util.strategyGet.StrategyGet;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;

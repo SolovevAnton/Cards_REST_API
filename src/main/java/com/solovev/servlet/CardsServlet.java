@@ -1,10 +1,8 @@
 package com.solovev.servlet;
 
-import com.solovev.dao.DAO;
 import com.solovev.dao.daoImplementations.CardsDao;
-import com.solovev.dto.DTO;
 import com.solovev.model.Card;
-import com.solovev.util.StrategyGet;
+import com.solovev.util.strategyGet.*;
 
 import javax.servlet.annotation.WebServlet;
 import java.util.Map;
@@ -17,6 +15,16 @@ public class CardsServlet extends AbstractServlet<Card> {
 
     @Override
     protected Optional<StrategyGet<?>> defineStrategyOfGet(Map<String, String[]> parametersMap) {
-        return Optional.empty();
+        StrategyGet<?> chosenStrategy = null;
+        if (parametersMap.isEmpty()) {
+            chosenStrategy = new StrategyGetAll<>(parametersMap,getDao());
+        } else if (parametersMap.containsKey("id")) {
+            chosenStrategy = new StrategyGetById<>(parametersMap, getDao());
+        }  else if (parametersMap.containsKey("userId")) {
+            chosenStrategy = new StrategyGetCardsByUserId(parametersMap);
+        } else if(parametersMap.containsKey("categoryId")){
+            chosenStrategy = new StrategyGetCardsByCategoryId(parametersMap);
+        }
+        return Optional.ofNullable(chosenStrategy);
     }
 }

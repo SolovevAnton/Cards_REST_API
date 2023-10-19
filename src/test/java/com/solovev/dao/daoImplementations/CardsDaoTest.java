@@ -35,11 +35,13 @@ public class CardsDaoTest {
 
     @Test
     public void getByUser() {
-        long firstUserId = 1;
-        long lastUserId = USERS.size();
+        User firstUser = USERS.get(0);
+        User lastUser = USERS.get(USERS.size()-1);
+        long firstUserId = firstUser.getId();
+        long lastUserId = lastUser.getId();
         long nonExistentUser = firstUserId - 1;
-        Collection<Card> firstUserCards = CARDS.stream().filter(card -> card.getCategory().getUser().getId() == firstUserId).toList();
-        Collection<Card> lastUserCards = CARDS.stream().filter(card -> card.getCategory().getUser().getId() == lastUserId).toList();
+        Collection<Card> firstUserCards = CARDS.stream().filter(card -> card.getCategory().getUser().equals(firstUser)).toList();
+        Collection<Card> lastUserCards = CARDS.stream().filter(card -> card.getCategory().getUser().equals(lastUser)).toList();
 
         assertEquals(firstUserCards, cardsDao.getByUser(firstUserId));
         assertEquals(lastUserCards, cardsDao.getByUser(lastUserId));
