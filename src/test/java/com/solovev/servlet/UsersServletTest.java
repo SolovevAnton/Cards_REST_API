@@ -34,7 +34,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -51,7 +52,7 @@ public class UsersServletTest {
 
             ResponseResult<User> expectedResp = new ResponseResult<>(expectedUser);
             assertEquals(expectedResp.jsonToString(), stringWriter.toString());
-            assertEquals(successStatusCode,response.getStatus());
+            assertEquals(successStatusCode, response.getStatus());
         }
 
         @ParameterizedTest
@@ -66,7 +67,7 @@ public class UsersServletTest {
 
             ResponseResult<User> expectedResp = new ResponseResult<>(usersServlet.getNotFoundIdMsg(nonExistentId));
             assertEquals(expectedResp.jsonToString(), stringWriter.toString());
-            assertEquals(notFoundStatusCode,response.getStatus());
+            assertEquals(notFoundStatusCode, response.getStatus());
         }
 
         @Test
@@ -76,7 +77,7 @@ public class UsersServletTest {
             usersServlet.doGet(request, response);
             ResponseResult<Collection<User>> expectedResp = new ResponseResult<>(USERS);
             assertEquals(expectedResp.jsonToString(), stringWriter.toString());
-            assertEquals(successStatusCode,response.getStatus());
+            assertEquals(successStatusCode, response.getStatus());
         }
 
         @Test
@@ -86,8 +87,8 @@ public class UsersServletTest {
 
             assertAll(() -> usersServlet.doGet(request, response));
             ResponseResult<User> expectedResult = new ResponseResult<>(usersServlet.getNoStrategyFoundMsg());
-            assertEquals(expectedResult.jsonToString(),stringWriter.toString());
-            assertEquals(notFoundStatusCode,response.getStatus());
+            assertEquals(expectedResult.jsonToString(), stringWriter.toString());
+            assertEquals(notFoundStatusCode, response.getStatus());
         }
 
         @Test
@@ -100,7 +101,7 @@ public class UsersServletTest {
 
             ResponseResult<User> expectedResp = new ResponseResult<>("java.lang.NumberFormatException: For input string: \"NaN\"");
             assertEquals(expectedResp.jsonToString(), stringWriter.toString());
-            assertEquals(notFoundStatusCode,response.getStatus());
+            assertEquals(notFoundStatusCode, response.getStatus());
         }
 
         @Test
@@ -112,7 +113,7 @@ public class UsersServletTest {
 
             ResponseResult<User> expectedResp = new ResponseResult<>("java.lang.IllegalArgumentException: all values must be unique");
             assertEquals(expectedResp.jsonToString(), stringWriter.toString());
-            assertEquals(notFoundStatusCode,response.getStatus());
+            assertEquals(notFoundStatusCode, response.getStatus());
         }
 
         @Test
@@ -128,7 +129,7 @@ public class UsersServletTest {
 
             ResponseResult<User> expectedResp = new ResponseResult<>(expectedUser);
             assertEquals(expectedResp.jsonToString(), stringWriter.toString());
-            assertEquals(successStatusCode,response.getStatus());
+            assertEquals(successStatusCode, response.getStatus());
         }
 
         @Test
@@ -144,7 +145,7 @@ public class UsersServletTest {
 
             ResponseResult<User> expectedResp = new ResponseResult<>("Cannot find user with this login and password");
             assertEquals(expectedResp.jsonToString(), stringWriter.toString());
-            assertEquals(notFoundStatusCode,response.getStatus());
+            assertEquals(notFoundStatusCode, response.getStatus());
         }
     }
 
@@ -162,7 +163,7 @@ public class UsersServletTest {
             ResponseResult<User> expectedResp = new ResponseResult<>(expectedUser);
             assertEquals(expectedResp.jsonToString(), stringWriter.toString());
             assertFalse(userDAO.get().contains(expectedUser));
-            assertEquals(successStatusCode,response.getStatus());
+            assertEquals(successStatusCode, response.getStatus());
 
             //checks deleted only one
             assertEquals(originalSize - 1, userDAO.get().size());
@@ -181,7 +182,7 @@ public class UsersServletTest {
 
             ResponseResult<User> expectedResp = new ResponseResult<>(usersServlet.getNotFoundIdMsg(nonExistentId));
             assertEquals(expectedResp.jsonToString(), stringWriter.toString());
-            assertEquals(notFoundStatusCode,response.getStatus());
+            assertEquals(notFoundStatusCode, response.getStatus());
             //check no changes;
             assertEquals(initialCollection, userDAO.get());
         }
@@ -194,7 +195,7 @@ public class UsersServletTest {
             ResponseResult<Collection<User>> expectedResp = new ResponseResult<>(usersServlet.getMessageNoId());
 
             assertEquals(expectedResp.jsonToString(), stringWriter.toString());
-            assertEquals(notFoundStatusCode,response.getStatus());
+            assertEquals(notFoundStatusCode, response.getStatus());
             //check no changes;
             assertEquals(USERS, userDAO.get());
         }
@@ -208,7 +209,7 @@ public class UsersServletTest {
 
             ResponseResult<User> expectedResp = new ResponseResult<>("java.lang.NumberFormatException: For input string: \"NaN\"");
             assertEquals(expectedResp.jsonToString(), stringWriter.toString());
-            assertEquals(notFoundStatusCode,response.getStatus());
+            assertEquals(notFoundStatusCode, response.getStatus());
             //check no changes;
             assertEquals(USERS, userDAO.get());
         }
@@ -229,7 +230,7 @@ public class UsersServletTest {
             ResponseResult<User> expectedUser = new ResponseResult<>(userToReplace);
             assertEquals(expectedUser.jsonToString(), stringWriter.toString());
             assertEquals(userToReplaceWith, userDAO.get(replacementId).orElse(null));
-            assertEquals(successStatusCode,response.getStatus());
+            assertEquals(successStatusCode, response.getStatus());
             assertFalse(userDAO.get().contains(userToReplace));
         }
 
@@ -251,7 +252,7 @@ public class UsersServletTest {
             ResponseResult<User> expectedUser = new ResponseResult<>(usersServlet.getNotFoundIdMsg(nonExistentId));
             assertEquals(expectedUser.jsonToString(), stringWriter.toString());
             assertEquals(USERS, userDAO.get());
-            assertEquals(notFoundStatusCode,response.getStatus());
+            assertEquals(notFoundStatusCode, response.getStatus());
         }
 
         @Test
@@ -264,7 +265,7 @@ public class UsersServletTest {
 
             ResponseResult<User> expectedResult = new ResponseResult<>(usersServlet.getConstrainViolatedMsg());
             assertEquals(expectedResult.jsonToString(), stringWriter.toString());
-            assertEquals(notFoundStatusCode,response.getStatus());
+            assertEquals(notFoundStatusCode, response.getStatus());
             assertEquals(USERS, userDAO.get());
         }
     }
@@ -272,7 +273,7 @@ public class UsersServletTest {
     @Nested
     public class doPostTests {
         @Test
-        public void doPostJson() throws IOException, ServletException {
+        public void doPostJson() throws IOException {
             long possibleId = USERS.size() + 1;
             User userToAdd = new User(possibleId, "addedLog", "addedPass", "addedName");
             assumeFalse(userDAO.get().contains(userToAdd));
@@ -284,18 +285,18 @@ public class UsersServletTest {
 
             assertEquals(expectedResp.jsonToString(), stringWriter.toString());
             assertEquals(userToAdd, userDAO.get(possibleId).get());
-            assertEquals(successStatusCode,response.getStatus());
+            assertEquals(successStatusCode, response.getStatus());
             assertEquals(possibleId, userDAO.get().size());
         }
 
         @Test
-        public void noObjectPresent() throws IOException, ServletException {
+        public void noObjectPresent() throws IOException{
             when(request.getHeader("Content-Type")).thenReturn("text/html");
             usersServlet.doPost(request, response);
 
             ResponseResult<User> expectedResult = new ResponseResult<>(usersServlet.getNoJsonObjectProvidedMsg());
             assertEquals(expectedResult.jsonToString(), stringWriter.toString());
-            assertEquals(notFoundStatusCode,response.getStatus());
+            assertEquals(notFoundStatusCode, response.getStatus());
             //no chages test
             assertEquals(USERS, userDAO.get());
         }
@@ -310,14 +311,15 @@ public class UsersServletTest {
 
             ResponseResult<User> expectedResult = new ResponseResult<>(usersServlet.getConstrainViolatedMsg());
             assertEquals(expectedResult.jsonToString(), stringWriter.toString());
-            assertEquals(notFoundStatusCode,response.getStatus());
+            assertEquals(notFoundStatusCode, response.getStatus());
             assertEquals(USERS, userDAO.get());
         }
     }
+
     private final int successStatusCode = 200;
     private final int notFoundStatusCode = 400;
-    private DAO<User> userDAO = new UserDao();
-    private UsersServlet usersServlet = new UsersServlet();
+    private final DAO<User> userDAO = new UserDao();
+    private final UsersServlet usersServlet = new UsersServlet();
     @Mock
     private HttpServletRequest request;
     @Mock
@@ -339,7 +341,7 @@ public class UsersServletTest {
         PrintWriter writer = new PrintWriter(stringWriter);
         when(response.getWriter()).thenReturn(writer);
         //status setting
-        doAnswer(answer -> when(response.getStatus()).thenReturn((int)answer.getArguments()[0]))
+        doAnswer(answer -> when(response.getStatus()).thenReturn((int) answer.getArguments()[0]))
                 .when(response).setStatus(anyInt());
 
     }

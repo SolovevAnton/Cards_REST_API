@@ -44,7 +44,7 @@ abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
      *
      * @param req  request to process
      * @param resp response to give
-     * @throws IOException
+     * @throws IOException if IO occurs
      */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
