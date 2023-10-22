@@ -1,5 +1,6 @@
 package com.solovev.servlet;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.solovev.DBSetUpAndTearDown;
 import com.solovev.DataConstants;
@@ -49,6 +50,7 @@ public class UsersServletTest {
 
             ResponseResult<User> expectedResp = new ResponseResult<>(expectedUser);
             assertEquals(expectedResp.jsonToString(), stringWriter.toString());
+            assertEquals(successStatusCode,response.getStatus());
         }
 
         @ParameterizedTest
@@ -63,6 +65,7 @@ public class UsersServletTest {
 
             ResponseResult<User> expectedResp = new ResponseResult<>(usersServlet.getNotFoundIdMsg(nonExistentId));
             assertEquals(expectedResp.jsonToString(), stringWriter.toString());
+            assertEquals(successStatusCode,response.getStatus());
         }
 
         @Test
@@ -72,14 +75,17 @@ public class UsersServletTest {
             usersServlet.doGet(request, response);
             ResponseResult<Collection<User>> expectedResp = new ResponseResult<>(USERS);
             assertEquals(expectedResp.jsonToString(), stringWriter.toString());
+            assertEquals(successStatusCode,response.getStatus());
         }
 
         @Test
-        public void doGetWithNotExistentStrategy() {
+        public void doGetWithNotExistentStrategy() throws JsonProcessingException {
             Map<String, String[]> parameterMap = Map.of("login", new String[]{USERS.get(0).getLogin()});
             when(request.getParameterMap()).thenReturn(parameterMap);
 
             assertAll(() -> usersServlet.doGet(request, response));
+            ResponseResult<User> expectedResult = new ResponseResult<>(usersServlet.getNoStrategyFoundMsg());
+            assertEquals(expectedResult.jsonToString(),stringWriter.toString());
         }
 
         @Test
@@ -92,6 +98,7 @@ public class UsersServletTest {
 
             ResponseResult<User> expectedResp = new ResponseResult<>("java.lang.NumberFormatException: For input string: \"NaN\"");
             assertEquals(expectedResp.jsonToString(), stringWriter.toString());
+
         }
 
         @Test
@@ -118,6 +125,7 @@ public class UsersServletTest {
 
             ResponseResult<User> expectedResp = new ResponseResult<>(expectedUser);
             assertEquals(expectedResp.jsonToString(), stringWriter.toString());
+            assertEquals(successStatusCode,response.getStatus());
         }
 
         @Test
@@ -152,6 +160,7 @@ public class UsersServletTest {
             assertFalse(userDAO.get().contains(expectedUser));
 
             //checks deleted only one
+            assertEquals(successStatusCode,response.getStatus());
             assertEquals(originalSize - 1, userDAO.get().size());
         }
 
@@ -214,6 +223,7 @@ public class UsersServletTest {
             ResponseResult<User> expectedUser = new ResponseResult<>(userToReplace);
             assertEquals(expectedUser.jsonToString(), stringWriter.toString());
             assertEquals(userToReplaceWith, userDAO.get(replacementId).orElse(null));
+            assertEquals(successStatusCode,response.getStatus());
             assertFalse(userDAO.get().contains(userToReplace));
         }
 
@@ -266,6 +276,7 @@ public class UsersServletTest {
 
             assertEquals(expectedResp.jsonToString(), stringWriter.toString());
             assertEquals(userToAdd, userDAO.get(possibleId).get());
+            assertEquals(successStatusCode,response.getStatus());
             assertEquals(possibleId, userDAO.get().size());
         }
 
@@ -289,7 +300,8 @@ public class UsersServletTest {
             assertEquals(USERS, userDAO.get());
         }
     }
-
+    private final int successStatusCode = 200;
+    private final int notFoundStatusCode = 400;
     private DAO<User> userDAO = new UserDao();
     private UsersServlet usersServlet = new UsersServlet();
     @Mock
@@ -305,10 +317,10 @@ public class UsersServletTest {
         dbSetUpAndTearDown.dbFactoryAndTablesCreation();
         dbSetUpAndTearDown.setUpUsersTableValues(USERS);
 
-        initializeRequest();
+        initializeResponse();
     }
 
-    public void initializeRequest() throws IOException {
+    public void initializeResponse() throws IOException {
         stringWriter = new StringWriter();
         PrintWriter writer = new PrintWriter(stringWriter);
         when(response.getWriter()).thenReturn(writer);

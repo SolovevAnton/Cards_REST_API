@@ -5,6 +5,7 @@ import com.solovev.dao.DAO;
 import com.solovev.dto.DTO;
 import com.solovev.dto.ResponseResult;
 import com.solovev.util.strategyGet.StrategyGet;
+import lombok.Getter;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -14,9 +15,14 @@ import java.util.Map;
 import java.util.Optional;
 
 abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
+    @Getter
     private final String messageNoId = "Please provide object ID";
+    @Getter
     private final String constrainViolatedMsg = "Object violates DB constraint";
+    @Getter
+    private final String noStrategyFoundMsg = "Cannot do get request with this params";
     private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
+    @Getter
     private final DAO<T> dao;
     private final Class<T> self;
     private ResponseResult<T> responseResult;
@@ -44,11 +50,14 @@ abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
 
         Map<String, String[]> parameters = req.getParameterMap();
         Optional<StrategyGet<?>> strategyGet = defineStrategyOfGet(parameters);
-
+        ResponseResult<?> result;
         if (strategyGet.isPresent()) {
-            ResponseResult<?> result = strategyGet.get().getResult();
-            resp.getWriter().write(result.jsonToString());
+            result = strategyGet.get().getResult();
+        } else {
+            result = new ResponseResult<>();
+            result.setMessage(noStrategyFoundMsg);
         }
+        resp.getWriter().write(result.jsonToString());
     }
 
     abstract protected Optional<StrategyGet<?>> defineStrategyOfGet(Map<String, String[]> parametersMap);
@@ -162,15 +171,4 @@ abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
         return "Cannot find object with this ID: " + id;
     }
 
-    public String getMessageNoId() {
-        return messageNoId;
-    }
-
-    public String getConstrainViolatedMsg() {
-        return constrainViolatedMsg;
-    }
-
-    public DAO<T> getDao() {
-        return dao;
-    }
 }
