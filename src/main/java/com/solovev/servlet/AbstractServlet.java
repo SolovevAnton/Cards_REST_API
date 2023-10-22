@@ -21,6 +21,8 @@ abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
     private final String constrainViolatedMsg = "Object violates DB constraint";
     @Getter
     private final String noStrategyFoundMsg = "Cannot do get request with this params";
+    @Getter
+    private final String noJsonObjectProvidedMsg = "Please provide JSON object to post";
     private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
     @Getter
     private final DAO<T> dao;
@@ -57,7 +59,7 @@ abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
             result = new ResponseResult<>();
             result.setMessage(noStrategyFoundMsg);
         }
-        resp.getWriter().write(result.jsonToString());
+        writeResponseAndSetCode(resp,result);
     }
 
     abstract protected Optional<StrategyGet<?>> defineStrategyOfGet(Map<String, String[]> parametersMap);
@@ -90,7 +92,7 @@ abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
             responseResult.setMessage(messageNoId);
         }
 
-        resp.getWriter().write(responseResult.jsonToString());
+        writeResponseAndSetCode(resp,responseResult);
     }
 
     /**
@@ -119,7 +121,7 @@ abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
                 responseResult.setMessage(constrainViolatedMsg);
             }
 
-            resp.getWriter().write(responseResult.jsonToString());
+            writeResponseAndSetCode(resp,responseResult);
         }
     }
 
@@ -139,8 +141,10 @@ abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
             } catch (IllegalArgumentException e) {
                 responseResult.setMessage(constrainViolatedMsg);
             }
+        } else {
+            responseResult.setMessage(noJsonObjectProvidedMsg);
         }
-        resp.getWriter().write(responseResult.jsonToString());
+        writeResponseAndSetCode(resp,responseResult);
     }
 
     /**
@@ -154,6 +158,10 @@ abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
         resp.setCharacterEncoding("utf-8");
         resp.setContentType("application/json;charset=utf-8");
         responseResult = new ResponseResult<>();
+    }
+    private void writeResponseAndSetCode(HttpServletResponse resp,ResponseResult<?> result) throws IOException {
+        resp.getWriter().write(result.jsonToString());
+        resp.setStatus(result.getMessage() == null ? 200 : 400);
     }
 
     /**
