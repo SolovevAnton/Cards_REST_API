@@ -8,11 +8,11 @@ import lombok.AccessLevel;
 import lombok.Getter;
 
 import javax.persistence.Table;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.*;
-import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -39,7 +39,7 @@ public class DBSetUpAndTearDown {
         }
 
         //creates factory and tables
-        SessionFactorySingleton.getInstance();
+        SessionFactorySingleton.getInstance(new File("D:\\Git\\Practice_Projects\\JavaEE\\Cards_REST_API\\src\\test\\java\\resources\\hibernatemysql.cfg.xml"));
 
         Class.forName("com.mysql.cj.jdbc.Driver");
         openConnection();
@@ -70,11 +70,12 @@ public class DBSetUpAndTearDown {
             statement.executeBatch();
         }
     }
+
     public void setUpCategoriesTableValues(Collection<Category> categories) throws SQLException {
         String SQL = "INSERT INTO " + CATEGORIES_TABLE_NAME + "(name,user_id) values(?,?)";
         try (PreparedStatement statement = connection.prepareStatement(SQL)) {
             for (Category category : categories) {
-                statement.setString(1,category.getName());
+                statement.setString(1, category.getName());
                 statement.setLong(2, category.getUser().getId());
 
                 statement.addBatch();
@@ -82,13 +83,14 @@ public class DBSetUpAndTearDown {
             statement.executeBatch();
         }
     }
+
     public void setUpCardsTableValues(Collection<Card> cards) throws SQLException {
         String SQL = "INSERT INTO " + CARDS_TABLE_NAME + "(question,answer,category_id,creation_date) values(?,?,?,?)";
         try (PreparedStatement statement = connection.prepareStatement(SQL)) {
             for (Card card : cards) {
-                statement.setString(1,card.getQuestion());
+                statement.setString(1, card.getQuestion());
                 statement.setString(2, card.getAnswer());
-                statement.setLong(3,card.getCategory().getId());
+                statement.setLong(3, card.getCategory().getId());
                 statement.setDate(4, Date.valueOf(card.getCreationDate()));
 
                 statement.addBatch();
