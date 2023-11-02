@@ -2,6 +2,7 @@ package com.solovev.servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.solovev.dao.DAO;
+import com.solovev.dao.SessionFactorySingleton;
 import com.solovev.dto.DTO;
 import com.solovev.dto.ResponseResult;
 import com.solovev.util.strategyGet.StrategyGet;
@@ -28,6 +29,9 @@ abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
     private final DAO<T> dao;
     private final Class<T> self;
     private ResponseResult<T> responseResult;
+    static{
+        SessionFactorySingleton.getInstance();
+    }
 
     public AbstractServlet(Class<T> self, DAO<T> dao) {
         super();
