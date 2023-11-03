@@ -54,7 +54,6 @@ public class RelationshipsTest {
     }
 
     @Test
-    @Disabled
     public void cascadeDontDeleteTest() {
         Card deletedCard = cardsDao.delete(1).get();
 

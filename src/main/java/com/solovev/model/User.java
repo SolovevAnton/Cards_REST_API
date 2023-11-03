@@ -33,7 +33,14 @@ public class User implements DTO {
     @JsonIgnore
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    @OneToMany(mappedBy = "user",orphanRemoval = true,cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user",orphanRemoval = true,cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private final List<Category> categories = new ArrayList<>();
+    private String cookieHash;
 
+    public User(long id, @NonNull String login, String password, String name) {
+        this.id = id;
+        this.login = login;
+        this.password = password;
+        this.name = name;
+    }
 }
