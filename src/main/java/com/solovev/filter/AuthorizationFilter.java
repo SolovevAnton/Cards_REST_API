@@ -1,5 +1,6 @@
 package com.solovev.filter;
 
+import com.solovev.dao.daoImplementations.UserDao;
 import lombok.Getter;
 
 import javax.servlet.*;
@@ -8,6 +9,9 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+
+import static java.util.Objects.nonNull;
+
 
 @WebFilter("/*")
 public class AuthorizationFilter implements Filter {
@@ -24,20 +28,38 @@ public class AuthorizationFilter implements Filter {
         request = (HttpServletRequest) servletRequest;
         response  = (HttpServletResponse) servletResponse;
 
-        if(isAuthorized() || isLoginOrRegisterPage()){
+        if(isLoginOrRegisterPage() || isAuthorized()){
             filterChain.doFilter(request,response);
         } else {
             response.sendRedirect(request.getContextPath() + redirectURI);
         }
 
     }
-    private boolean isAuthorized(){
-        request.getCookies();
-        return false;
-    }
     private boolean isLoginOrRegisterPage(){
         String requestURI = request.getRequestURI();
         return requestURI.endsWith(logInURI) || requestURI.endsWith(registerURI);
+    }
+    private boolean isAuthorized(){
+        Cookie[] cookies = request.getCookies();
+        return nonNull(cookies)
+                && isAuthorized(cookies);
+    }
+    private boolean isAuthorized(Cookie[] cookies){
+        boolean isAuthorized = false;
+        String id = null;
+        String hash = null;
+
+        for(Cookie cookie : cookies){
+            switch (cookie.getName()){
+                case "id" -> id = cookie.getValue();
+                case "hash" -> hash = cookie.getValue();
+            }
+        }
+
+        if(nonNull(id) && nonNull(hash)){
+            isAuthorized = new UserDao().getUserByHashAndId(id,hash).isPresent();
+        }
+        return isAuthorized;
     }
     @Override
     public void init(FilterConfig filterConfig) {
