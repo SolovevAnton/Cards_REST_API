@@ -18,6 +18,7 @@ import static java.util.Objects.nonNull;
 public class AuthorizationFilter implements Filter {
     private HttpServletRequest request;
     private HttpServletResponse response;
+    private String authorisationServletURI = "authentication";
     @Getter
     private String logInURI = "signIn.html";
     @Getter
@@ -38,7 +39,7 @@ public class AuthorizationFilter implements Filter {
     }
     private boolean isAuthorizedPage(){
         String requestURI = request.getRequestURI();
-        List<String> authorizedPages = List.of(logInURI,registerURI,"authentication.js","authentication.css");
+        List<String> authorizedPages = List.of(logInURI,registerURI,authorisationServletURI,"authentication.js","authentication.css");
         return authorizedPages.stream().anyMatch(requestURI::endsWith);
     }
     private boolean isAuthorized(){

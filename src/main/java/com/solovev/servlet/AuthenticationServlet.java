@@ -22,13 +22,14 @@ public class AuthenticationServlet extends HttpServlet {
     private final UserDao userDao = new UserDao();
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
        configEncodingAndResponseType(req,resp);
        if(isJson(req)){
            RequestUserInfo info = new ObjectMapper().readValue(req.getReader(), RequestUserInfo.class);
            Optional<User> foundUser = userDao.getUserByLoginAndPass(info.login(),info.pass());
            if(foundUser.isPresent()){
                setCookiesAndUserHash(foundUser.get(),resp);
+               resp.setStatus(204);
            } else {
                resp.setStatus(404);
                resp.getWriter().write("No user with this login password pair found");

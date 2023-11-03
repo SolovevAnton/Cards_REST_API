@@ -1,8 +1,8 @@
 INSERT INTO users (login, name, password, registration_date)
 VALUES
-    (1, 'firstLog', 'firstPass', NOW()),
-    (2, 'secondLog', 'secondPass', NOW()),
-    (3, 'thirdLog', 'thirdPass', NOW());
+    ('firstLog', 'firstPass', NOW()),
+    ('secondLog', 'secondPass', NOW()),
+    ('thirdLog', 'thirdPass', NOW());
 
 INSERT INTO categories (id, name, user_id)
 VALUES

@@ -2,18 +2,19 @@
 <html>
 <head>
   <title>Log In</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <script src="scripts/authentication.js"></script>
   <link rel="stylesheet" type="text/css" href="styles/authentication.css">
 </head>
 <body>
 <h2>Sign in</h2>
-<form>
+<form id="formSignIn">
   <label for="login">Login:</label>
   <input class="field" id="login" name="login" placeholder="Login" required><br>
-
   <label for="password">Password:</label>
   <input class="field" type="password" id="password" placeholder="Password" required><br>
-  <button name="accept" type="button">Accept</button>
+
+  <button name="accept">Accept</button>
   <button name="decline" onclick="clearForm()" type="button">Decline</button>
 </form>
 <p>Dont have an account? <a href="registration.html">Sign up</a></p>
