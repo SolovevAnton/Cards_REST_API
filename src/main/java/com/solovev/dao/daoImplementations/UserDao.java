@@ -14,4 +14,8 @@ public class UserDao extends AbstractDAO<User> {
         Map<String, Object> parametersAndValues = Map.of("login",login,"password",password);
         return getObjectByParam(parametersAndValues);
     }
+    public Optional<User> getUserByHashAndId(String id, String hash){
+        Map<String, Object> parametersAndValues = Map.of("id",id,"cookieHash",hash);
+        return getObjectByParam(parametersAndValues);
+    }
 }

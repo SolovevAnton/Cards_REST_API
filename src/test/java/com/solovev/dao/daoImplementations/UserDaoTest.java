@@ -137,6 +137,42 @@ public class UserDaoTest {
         assertEquals(Optional.empty(), userDAO.getUserByLoginAndPass(nonExistentLog, nonExistentPass));
 
     }
+    @Nested
+    public class cookieRelated{
+        @Test
+        public void getUserByIdAndHashSuccess() {
+            UserDao userDAO = new UserDao();
+            User userToFind = USERS.get(0);
+            String userId = String.valueOf(userToFind.getId());
+            String userHash = userToFind.getCookieHash();
+
+            assertEquals(userToFind, userDAO.getUserByHashAndId(userId, userHash).get());
+        }
+        @Test
+        public void getUserByIdAndHashNullHashFail() {
+            UserDao userDAO = new UserDao();
+            User userToFind = USERS.get(1);
+            String userId = String.valueOf(userToFind.getId());
+            String userHash = userToFind.getCookieHash();
+
+            assertThrows(NullPointerException.class,()-> userDAO.getUserByHashAndId(userId,userHash));
+        }
+
+        @Test
+        public void getUserByLogAndPassNotFound() {
+            UserDao userDAO = new UserDao();
+
+            User userToFind = USERS.get(0);
+            String userId = String.valueOf(userToFind.getId());
+            String userHash = userToFind.getCookieHash();
+            String idWithOtherHash = "1";
+            String nonExistentHash = userHash + " corrupted";
+
+            assertEquals(Optional.empty(), userDAO.getUserByLoginAndPass(userId, nonExistentHash));
+            assertEquals(Optional.empty(), userDAO.getUserByLoginAndPass(idWithOtherHash, userHash));
+            assertEquals(Optional.empty(), userDAO.getUserByLoginAndPass(idWithOtherHash, nonExistentHash));
+        }
+    }
 
     @Test
     public void delete() throws SQLException {

@@ -59,13 +59,14 @@ public class DBSetUpAndTearDown {
      * Add all users from collection to table
      */
     public void setUpUsersTableValues(Collection<User> users) throws SQLException {
-        String SQL = "INSERT INTO " + USERS_TABLE_NAME + "(login,name,password,registration_date) values(?,?,?,?)";
+        String SQL = "INSERT INTO " + USERS_TABLE_NAME + "(login,name,password,registration_date,cookie_hash) values(?,?,?,?,?)";
         try (PreparedStatement statement = connection.prepareStatement(SQL)) {
             for (User user : users) {
                 statement.setString(1, user.getLogin());
                 statement.setString(2, user.getName());
                 statement.setString(3, user.getPassword());
                 statement.setDate(4, Date.valueOf(user.getRegistrationDate()));
+                statement.setString(5,user.getCookieHash());
 
                 statement.addBatch();
             }

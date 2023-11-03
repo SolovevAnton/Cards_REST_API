@@ -8,7 +8,7 @@ import java.util.List;
 
 public class DataConstants {
     public static final List<User> USERS = List.of(
-            new User(1, "firstLog", "firstPass", "first"),
+            new User(1, "firstLog", "firstPass", "first","firstHash"),
             new User(2, "secondLog", "secondPass", "second"),
             new User(3, "thirdLog", "thirdPass", "third")
     );
