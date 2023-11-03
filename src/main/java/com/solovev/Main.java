@@ -9,9 +9,7 @@ import java.util.List;
 public class Main {
     /*
      * Todo:
-     *  1.how to store Passwords
-     *  2. how to send Passwords
-     *  3. should i catch number format exceptions?
+     *  2. how to send Passwords in URL? or not?
      */
     public static void main(String[] args) {
 

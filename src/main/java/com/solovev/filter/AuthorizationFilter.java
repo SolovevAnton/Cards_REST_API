@@ -9,6 +9,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 import static java.util.Objects.nonNull;
 
@@ -28,16 +29,17 @@ public class AuthorizationFilter implements Filter {
         request = (HttpServletRequest) servletRequest;
         response  = (HttpServletResponse) servletResponse;
 
-        if(isLoginOrRegisterPage() || isAuthorized()){
+        if(isAuthorizedPage() || isAuthorized()){
             filterChain.doFilter(request,response);
         } else {
             response.sendRedirect(request.getContextPath() + redirectURI);
         }
 
     }
-    private boolean isLoginOrRegisterPage(){
+    private boolean isAuthorizedPage(){
         String requestURI = request.getRequestURI();
-        return requestURI.endsWith(logInURI) || requestURI.endsWith(registerURI);
+        List<String> authorizedPages = List.of(logInURI,registerURI,"authentication.js","authentication.css");
+        return authorizedPages.stream().anyMatch(requestURI::endsWith);
     }
     private boolean isAuthorized(){
         Cookie[] cookies = request.getCookies();

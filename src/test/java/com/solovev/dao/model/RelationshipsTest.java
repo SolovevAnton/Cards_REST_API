@@ -1,16 +1,15 @@
 package com.solovev.dao.model;
 
 import com.solovev.DBSetUpAndTearDown;
+import com.solovev.DataConstants;
 import com.solovev.dao.daoImplementations.CardsDao;
 import com.solovev.dao.daoImplementations.CategoriesDao;
 import com.solovev.dao.daoImplementations.UserDao;
 import com.solovev.model.Card;
 import com.solovev.model.Category;
 import com.solovev.model.User;
-import com.solovev.DataConstants;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
