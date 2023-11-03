@@ -20,12 +20,14 @@ import java.util.Optional;
 public class AuthenticationServlet extends HttpServlet {
     private final int cookieMaxAgeMinutes = 30;
     private final UserDao userDao = new UserDao();
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final String onlyJsonRequestsMsg = "only json requests";
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
        configEncodingAndResponseType(req,resp);
        if(isJson(req)){
-           RequestUserInfo info = new ObjectMapper().readValue(req.getReader(), RequestUserInfo.class);
+           RequestUserInfo info = objectMapper.readValue(req.getReader(), RequestUserInfo.class);
            Optional<User> foundUser = userDao.getUserByLoginAndPass(info.login(),info.pass());
            if(foundUser.isPresent()){
                setCookiesAndUserHash(foundUser.get(),resp);
@@ -36,9 +38,29 @@ public class AuthenticationServlet extends HttpServlet {
            }
        } else {
            resp.setStatus(400);
-           resp.getWriter().write("only json requests");
+           resp.getWriter().write(onlyJsonRequestsMsg);
        }
     }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        configEncodingAndResponseType(req,resp);
+        if(isJson(req)){
+            User userToAdd = objectMapper.readValue(req.getReader(),User.class);
+            try{
+                userDao.add(userToAdd);
+                setCookiesAndUserHash(userToAdd,resp);
+                resp.setStatus(204);
+            } catch (IllegalArgumentException e){
+                resp.setStatus(400);
+                resp.getWriter().write("User already exists");
+            }
+        } else {
+        resp.setStatus(400);
+        resp.getWriter().write(onlyJsonRequestsMsg);
+    }
+    }
+
     private void setCookiesAndUserHash(User user, HttpServletResponse resp){
         String hash = StringUtil.generateHash();
         setHashAndUpdateUser(user,hash);
