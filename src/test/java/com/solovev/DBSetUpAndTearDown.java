@@ -33,12 +33,14 @@ public class DBSetUpAndTearDown {
      */
     public void dbFactoryAndTablesCreation() throws IOException, ClassNotFoundException, SQLException {
         //assert the file is presented
-        String neededResourceName = "hibernatemysql.cfg.xml";
-        if (!Files.exists(Path.of("src", "test", "java", "resources", neededResourceName))) {
+        File neededResourceName = new File("D:\\Git\\Practice_Projects\\JavaEE\\Cards_REST_API\\src\\test\\java\\resources\\hibernatemysql.cfg.xml");
+        if (!Files.exists(neededResourceName.toPath())) {
             throw new IOException("configuration file: " + neededResourceName + " not found");
         }
 
         //creates factory and tables
+        //cleans factory instance
+        SessionFactorySingleton.closeAndDeleteInstance();
         SessionFactorySingleton.getInstance(new File("D:\\Git\\Practice_Projects\\JavaEE\\Cards_REST_API\\src\\test\\java\\resources\\hibernatemysql.cfg.xml"));
 
         Class.forName("com.mysql.cj.jdbc.Driver");
