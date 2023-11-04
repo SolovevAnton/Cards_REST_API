@@ -1,14 +1,18 @@
+/*DROP TABLE IF EXISTS cards;
+DROP TABLE IF EXISTS categories;
+DROP TABLE IF EXISTS users;*/
+
 INSERT INTO users (login, name, password, registration_date)
 VALUES
-    ('firstLog', 'firstPass', NOW()),
-    ('secondLog', 'secondPass', NOW()),
-    ('thirdLog', 'thirdPass', NOW());
+    ('1', 'first','1', NOW()),
+    ('2', 'second','2', NOW()),
+    ('3', 'third','3', NOW());
 
-INSERT INTO categories (id, name, user_id)
+INSERT INTO categories (name, user_id)
 VALUES
-    (1, 'firstCat', 1),
-    (2, 'secondCat', 1),
-    (3, 'thirdCat', 2);
+    ('firstCat', 1),
+    ('secondCat', 1),
+    ('thirdCat', 2);
 
 INSERT INTO cards (id, question, answer, category_id, creation_date)
 VALUES
