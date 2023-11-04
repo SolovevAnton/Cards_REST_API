@@ -1,5 +1,30 @@
 let user_id = getUserIdFromCookie();
-
+function getUserIdFromCookie() {
+    let cookies = document.cookie.split(' ');
+    for (let cookie of cookies) {
+        if (cookie.match("id=.+")) {
+            return cookie.split('=')[1].replace(";","");
+        }
+    }
+    return -1;
+}
+function fillUserCard(){
+    $.ajax({
+        type:'GET',
+        async: false,
+        url:`users?id=${user_id}`,
+        success: function (result){
+            createUserCard(result.data);
+        },
+        error: errorHandler
+    })
+}
+function createUserCard(user){
+    $('#userId').text(user.id);
+    $('#userLogin').text(user.login);
+    $('#userName').text(user.name);
+    $('#userRegistrationDate').text(user.registrationDate);
+}
 function fillTableCategoriesForUser() {
     $("#cardsTableBody").html("");
     $.ajax({
@@ -9,9 +34,7 @@ function fillTableCategoriesForUser() {
             let categories = result.data;
             createCategoriesTable(categories);
         },
-        error: [function (e) {
-            alert(`error: ${e.status} ${e.statusText}`);
-        }]
+        error: errorHandler
     });
 }
 function createCategoriesTable(categories){
@@ -23,6 +46,7 @@ function createCategoriesTable(categories){
     tableBody += '</tbody>';
     $('#categoriesTable').append(tableHeaders).append(tableBody);
 }
+
 function createHeaders(...headers){
     let resultRow = '<tr>'
     for(let header of headers){
@@ -30,7 +54,6 @@ function createHeaders(...headers){
     }
     return resultRow + '</tr>';
 }
-
 function createCardsTable(categoryId){
     let cards = getCardsForCategory(categoryId);
     let tableHeaders = createHeaders("Question","Answer","Creation date");
@@ -48,19 +71,11 @@ function getCardsForCategory(categoryId){
         success: function (result) {
             cards = result.data;
         },
-        error: [function (e) {
-            alert(`error: ${e.status} ${e.statusText}`);
-        }],
+        error: errorHandler,
         async: false
     });
     return cards;
 }
-function getUserIdFromCookie() {
-    let cookies = document.cookie.split(' ');
-    for (let cookie of cookies) {
-        if (cookie.match("id=.+")) {
-            return cookie.split('=')[1].replace(";","");
-        }
-    }
-    return -1;
+function errorHandler(e){
+    alert(`error: ${e.status} ${e.statusText}`);
 }

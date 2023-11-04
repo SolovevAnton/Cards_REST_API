@@ -14,9 +14,11 @@ VALUES
     ('secondCat', 1),
     ('thirdCat', 2);
 
-INSERT INTO cards (id, question, answer, category_id, creation_date)
+INSERT INTO cards (question, answer, category_id, creation_date)
 VALUES
-    (1, 'Q1', 'A1', 1, NOW()),    -- Assuming 'Q1' and 'A1' are linked to the category with ID 1
-    (2, 'Q2', 'A2', 1, NOW()),    -- Assuming 'Q2' and 'A2' are also linked to the category with ID 1
-    (3, 'Q3', 'A3', 2, NOW());
+    ('Q1', 'A1', 1, NOW()),    -- Assuming 'Q1' and 'A1' are linked to the category with ID 1
+    ('Q2', 'A2', 1, NOW()),    -- Assuming 'Q2' and 'A2' are also linked to the category with ID 1
+    ('Q3', 'A3', 2, NOW()),
+    ('Q4', 'A4', 3, NOW());
+
 

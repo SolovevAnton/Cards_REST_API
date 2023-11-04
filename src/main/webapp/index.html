@@ -7,7 +7,18 @@
     <script type="text/javascript" src="scripts/index.js"></script>
     <script type="text/javascript" src="scripts/authentication.js"></script>
 <body>
-<button id="btn-sign-out" onclick ="signOut()">Sign out</button>
+<div>
+    <h2>You are logged as:</h2>
+    <ul>
+        <li>UserId:<label id='userId'></label></li>
+        <li>Login:<label id='userLogin'></label></li>
+        <li>Name:<label id='userName'></label></li>
+        <li>Registration date:<label id='userRegistrationDate'></label></li>
+    </ul>
+    <script>fillUserCard()</script>
+    <button id="btn-sign-out" onclick="signOut()">Sign out</button>
+</div>
+<h3>Your categories:</h3>
 <table id="categoriesTable">
     <script>fillTableCategoriesForUser()</script>
 </table>
