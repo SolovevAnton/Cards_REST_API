@@ -1,3 +1,5 @@
+const authenticationServletURL = 'authentication';
+
 function clearForm() {
     let inputs = document.getElementsByTagName("input");
     for (let input of inputs) {
@@ -19,11 +21,11 @@ $(document).ready(
 function registration() {
     if (passwordsMatch()) {
         $.ajax({
-            url: 'authentication',
+            url: authenticationServletURL,
             method: 'POST',
             contentType: "application/json",
             data: JSON.stringify(getUserFromForm()),
-            success: successfulLoginHandler,
+            success: locateToMainPage,
             error: errorRequestHandler
         })
     } else {
@@ -60,19 +62,30 @@ function signIn() {
     let login = $('#login').val();
     let pass = $('#password').val();
     $.ajax({
-        url: 'authentication',
+        url: authenticationServletURL,
         method: 'PUT',
         contentType: "application/json",
         data: JSON.stringify({"login": login, "pass": pass}),
-        success: successfulLoginHandler,
+        success: locateToMainPage,
         error: errorRequestHandler
     })
 }
 
-function successfulLoginHandler() {
+function locateToMainPage() {
     window.location = "/Cards_REST_API"
 }
 
 function errorRequestHandler(jqXHR) {
     alert(`Error: ${jqXHR.status} ${jqXHR.responseText}`);
+}
+function signOut(){
+    $.ajax({
+        url: authenticationServletURL,
+        method: 'DELETE',
+        success: locateToSignInPage,
+        error: errorRequestHandler
+    });
+}
+function locateToSignInPage(){
+    window.location ="signIn.html";
 }

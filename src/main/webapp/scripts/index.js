@@ -1,7 +1,7 @@
 let user_id = 1;
 
 function fillTableCardsForUser(){
-    $("cardsTableBody").html("");
+    $("#cardsTableBody").html("");
     $.ajax({
         type: "GET",
         url: `cards?userId=${user_id}`,
@@ -15,7 +15,7 @@ function fillTableCardsForUser(){
                     "<td>" + cards[i].creationDate + "</td>" +
                     "</tr>";
 
-                $("table tbody").append(markup);
+                $("#cardsTableBody").append(markup);
             }
         }],
         error: [function (e) {
@@ -25,6 +25,3 @@ function fillTableCardsForUser(){
     });
 }
 
-$(document).ready(function (){
-    fillTableCardsForUser();
-});
