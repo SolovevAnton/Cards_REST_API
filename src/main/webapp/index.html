@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Cards</title>
+    <link rel="stylesheet" type="text/css" href="styles/index.css">
     <script src="scripts/jQuery.min.js"></script>
     <script type="text/javascript" src="scripts/index.js"></script>
     <script type="text/javascript" src="scripts/authentication.js"></script>
@@ -16,10 +17,10 @@
         <li>Registration date:<label id='userRegistrationDate'></label></li>
     </ul>
     <script>fillUserCard()</script>
-    <button id="btn-sign-out" onclick="signOut()">Sign out</button>
+    <button class = "sign-out" id="btn-sign-out" onclick="signOut()">Sign out</button>
 </div>
 <h3>Your categories:</h3>
-<table id="categoriesTable">
+<table class ="mainTable" id="categoriesTable">
     <script>fillTableCategoriesForUser()</script>
 </table>
 </body>

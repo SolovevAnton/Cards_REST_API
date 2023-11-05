@@ -97,6 +97,7 @@ public class AuthenticationServlet extends HttpServlet {
         for (Cookie cookie : cookies) {
             cookie.setValue(null);
             cookie.setMaxAge(0);
+            cookie.setPath("/");
             resp.addCookie(cookie);
         }
     }
