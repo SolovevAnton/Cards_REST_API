@@ -1,6 +1,6 @@
 /*DROP TABLE IF EXISTS cards;
-DROP TABLE IF EXISTS categories;
-DROP TABLE IF EXISTS users;*/
+DROP TABLE IF EXISTS categories;*/
+DROP TABLE IF EXISTS users;
 
 INSERT INTO users (login, name, password, registration_date)
 VALUES

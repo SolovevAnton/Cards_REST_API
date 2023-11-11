@@ -8,6 +8,7 @@ import java.io.File;
 
 public class SessionFactorySingleton {
     private static SessionFactory factory;
+    private static File configurationFile;
 
     synchronized public static SessionFactory getInstance() {
         if (factory == null) {
@@ -15,9 +16,14 @@ public class SessionFactorySingleton {
         }
         return factory;
     }
+
     synchronized public static SessionFactory getInstance(File file) {
+        if(!file.equals(configurationFile)){
+            closeAndDeleteInstance();
+        }
         if (factory == null) {
             factory = new Configuration().configure(file).buildSessionFactory();
+            configurationFile = file;
         }
         return factory;
     }
@@ -26,6 +32,7 @@ public class SessionFactorySingleton {
         if (factory != null) {
             factory.close();
         }
+        configurationFile = null;
         factory = null;
     }
 }

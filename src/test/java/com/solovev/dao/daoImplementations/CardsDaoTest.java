@@ -84,12 +84,11 @@ public class CardsDaoTest {
             assertThrows(IllegalArgumentException.class, () -> cardsDao.add(notUniqueFields));
             assertTrue(checkTableDidntChange());
         }
-    }
+        private boolean checkTableDidntChange() {
+            return cardsDao.get().equals(CARDS);
+        }
 
-    private boolean checkTableDidntChange() {
-        return cardsDao.get().equals(CARDS);
     }
-
     @BeforeEach
     public void setUp() throws SQLException, IOException, ClassNotFoundException {
         dbSetUpAndTearDown.dbFactoryAndTablesCreation();
