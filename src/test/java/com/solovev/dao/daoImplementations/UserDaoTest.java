@@ -159,7 +159,7 @@ public class UserDaoTest {
         }
 
         @Test
-        public void getUserByLogAndPassNotFound() {
+        public void getUserByLogAndCookieHashNotFound() {
             UserDao userDAO = new UserDao();
 
             User userToFind = USERS.get(0);
