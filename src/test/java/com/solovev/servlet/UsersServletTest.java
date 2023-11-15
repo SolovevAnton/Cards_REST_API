@@ -24,6 +24,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
@@ -130,6 +131,7 @@ public class UsersServletTest {
             ResponseResult<User> expectedResp = new ResponseResult<>(expectedUser);
             assertEquals(expectedResp.jsonToString(), stringWriter.toString());
             assertEquals(successStatusCode, response.getStatus());
+            fail();//to do HASH PASS
         }
 
         @Test
@@ -221,9 +223,10 @@ public class UsersServletTest {
         private final long replacementId = userToReplace.getId();
 
         @Test
-        public void doPutJson() throws IOException {
-            User userToReplaceWith = new User(replacementId, "replacedLog", "replacedPass", "replaced");
-            requestFactory(userToReplaceWith);
+        public void doPutJson() throws IOException, NoSuchFieldException, IllegalAccessException {
+            String replacedPass = "replacedPass";
+            User userToReplaceWith = new User(replacementId, "replacedLog", replacedPass, "replaced");
+            requestFactoryWithOriginalPassword(replacedPass,userToReplaceWith);
 
             usersServlet.doPut(request, response);
 
@@ -273,11 +276,14 @@ public class UsersServletTest {
     @Nested
     public class doPostTests {
         @Test
-        public void doPostJson() throws IOException {
+        public void doPostJson() throws IOException, NoSuchFieldException, IllegalAccessException {
             long possibleId = USERS.size() + 1;
-            User userToAdd = new User(possibleId, "addedLog", "addedPass", "addedName");
+            String addedPass = "addedPass";
+            User userToAdd = new User(possibleId, "addedLog", addedPass, "addedName");
+            //needed to overcome pass hashing
             assumeFalse(userDAO.get().contains(userToAdd));
-            requestFactory(userToAdd);
+
+            requestFactoryWithOriginalPassword(addedPass, userToAdd);
 
             usersServlet.doPost(request, response);
 
@@ -317,6 +323,7 @@ public class UsersServletTest {
     }
 
     private final int successStatusCode = 200;
+
     private final int notFoundStatusCode = 400;
     private final DAO<User> userDAO = new UserDao();
     private final UsersServlet usersServlet = new UsersServlet();
@@ -327,7 +334,6 @@ public class UsersServletTest {
     private StringWriter stringWriter;
     private static final DBSetUpAndTearDown dbSetUpAndTearDown = new DBSetUpAndTearDown();
     private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
-
     @BeforeEach
     public void setUp() throws SQLException, IOException, ClassNotFoundException {
         dbSetUpAndTearDown.dbFactoryAndTablesCreation();
@@ -356,6 +362,14 @@ public class UsersServletTest {
         String jsonObject = objectMapper.writeValueAsString(user);
         BufferedReader reader = new BufferedReader(new StringReader(jsonObject));
         when(request.getReader()).thenReturn(reader);
+    }
+
+    private void requestFactoryWithOriginalPassword(String originalPass, User userToAdd) throws NoSuchFieldException, IllegalAccessException, IOException {
+        Field passField = User.class.getDeclaredField("password");
+        passField.setAccessible(true);
+        passField.set(userToAdd, originalPass);
+        requestFactory(userToAdd);
+        userToAdd.setPassword(originalPass);
     }
 
     private final List<User> USERS = DataConstants.USERS;

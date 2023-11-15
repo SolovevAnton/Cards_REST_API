@@ -9,6 +9,6 @@ import com.password4j.Password;
 public class PassHashed {
     private static final String PEPPER = "pepper";
     public static String hash(String pass){
-        return Password.hash(pass).addSalt("1").withScrypt().getResult();
+        return Password.hash(pass).addPepper(PEPPER).addSalt(pass).withScrypt().getResult();
     }
 }

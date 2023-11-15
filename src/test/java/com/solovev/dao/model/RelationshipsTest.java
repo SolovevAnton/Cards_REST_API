@@ -27,7 +27,7 @@ public class RelationshipsTest {
 
     @Test
     public void addingTest() throws SQLException {
-        User userToAdd = new User(0, "added login", "added pass", "added name");
+        User userToAdd = new User(0, "added login", "added pass", "added name",null);
         Category categoryToAdd = new Category("added category", userToAdd);
         Card cardToAdd = new Card("Q to add", "A to add", categoryToAdd);
 
