@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.solovev.dao.daoImplementations.UserDao;
 import com.solovev.dto.RequestUserInfo;
 import com.solovev.model.User;
+import com.solovev.util.PassHashed;
 import com.solovev.util.StringUtil;
 
 import javax.servlet.annotation.WebServlet;
@@ -28,7 +29,8 @@ public class AuthenticationServlet extends HttpServlet {
         configEncoding(req, resp);
         if (isJson(req)) {
             RequestUserInfo info = objectMapper.readValue(req.getReader(), RequestUserInfo.class);
-            Optional<User> foundUser = userDao.getUserByLoginAndPass(info.login(), info.pass());
+            String hashedPass = PassHashed.hash(info.pass());
+            Optional<User> foundUser = userDao.getUserByLoginAndPass(info.login(), hashedPass);
             if (foundUser.isPresent()) {
                 setCookiesAndUserHash(foundUser.get(), resp);
                 resp.setStatus(200);

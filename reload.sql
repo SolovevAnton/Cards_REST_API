@@ -4,9 +4,9 @@ DROP TABLE IF EXISTS users;
 
 INSERT INTO users (login, name, password, registration_date)
 VALUES
-    ('1', 'first','1', NOW()),
-    ('2', 'second','2', NOW()),
-    ('3', 'third','3', NOW());
+    ('1', 'first','$100801$MQ==$seWMrv4cuFwYE+SVDl3ru/fbr9U0Ct8R5ZwW6O+MCYFWgTfrkQgUjrnk1tfR3Dj8AshTYkBJzAMFJWcNiq8Ryg==', NOW()),
+    ('2', 'second','$100801$Mg==$AeTcOMuY5rkyvW2VY5+lIDAzk7ecc81nEIAg4P7JY9Vjdi4iQL9Xep6dLPmgzP58h0n9VMHMcBrDqElFTwyD8A==', NOW()),
+    ('3', 'third','$100801$Mw==$siZr7COdxYj2w3XCvvHkBswpim+qQVNew/Jrubyi/omn89Dn6r1+UndnYnCLJxli3+3cQyYMlLH46j3FTXo5tA==', NOW());
 
 INSERT INTO categories (name, user_id)
 VALUES

@@ -1,0 +1,7 @@
+GET http://localhost:8080/Cards_REST_API/users
+###
+GET http://localhost:8080/Cards_REST_API/categories
+###
+GET http://localhost:8080/Cards_REST_API/cards
+###
+GET http://localhost:8080/Cards_REST_API/users?id=1

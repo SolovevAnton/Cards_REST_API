@@ -323,7 +323,6 @@ public class UsersServletTest {
     }
 
     private final int successStatusCode = 200;
-
     private final int notFoundStatusCode = 400;
     private final DAO<User> userDAO = new UserDao();
     private final UsersServlet usersServlet = new UsersServlet();

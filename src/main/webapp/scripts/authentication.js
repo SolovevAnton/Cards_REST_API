@@ -34,7 +34,7 @@ function registration() {
 }
 
 function passwordsMatch() {
-    let pass1 = $('#registrationPassword').val();
+    let pass1 = $('#password').val();
     let pass2 = $('#confirmPassword').val();
     return pass1 === pass2;
 }
