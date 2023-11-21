@@ -64,3 +64,11 @@ h3 {
     text-align: left;
     margin-left: 10px;
 }
+
+/* Style for the image with the "icon" class */
+.icon {
+    display: block;
+    max-width: 25pt; /* Maximum width for the icon */
+    height: auto; /* Maintains the image's aspect ratio */
+    border: none; /* Removes borders */
+}

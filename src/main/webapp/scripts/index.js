@@ -1,4 +1,5 @@
 let user_id = getUserIdFromCookie();
+const modifyIcon = `<img class="icon" src="styles/icons/modify.png" alt ="modifyIcon"></img>`
 function getUserIdFromCookie() {
     let cookies = document.cookie.split(' ');
     for (let cookie of cookies) {
@@ -38,10 +39,16 @@ function fillTableCategoriesForUser() {
     });
 }
 function createCategoriesTable(categories){
-    let tableHeaders = createHeaders("Category id","Category name","Cards");
+    let tableHeaders = createHeaders("Category id","Category name","Cards","Options");
     let tableBody ='<tbody>' ;
+    let userModifyButton = `<button class ="icon">${modifyIcon}</button>`;
     for(let category of categories){
-        tableBody += `<tr><td>${category.id}</td><td>${category.name}</td><td>${createCardsTable(category.id)}</td></tr>`;
+        tableBody += `<tr>
+<td>${category.id}</td>
+<td>${category.name}</td>
+<td>${createCardsTable(category.id)}</td>
+<td>${userModifyButton}</td>
+</tr>`;
     }
     tableBody += '</tbody>';
     $('#categoriesTable').append(tableHeaders).append(tableBody);
