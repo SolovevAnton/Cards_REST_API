@@ -17,11 +17,26 @@
         <li>Registration date:<label id='userRegistrationDate'></label></li>
     </ul>
     <script>fillUserCard()</script>
-    <button class = "sign-out" id="btn-sign-out" onclick="signOut()">Sign out</button>
+    <button class="sign-out" id="btn-sign-out" onclick="signOut()">Sign out</button>
 </div>
 <h3>Your categories:</h3>
-<table class ="mainTable" id="categoriesTable">
+<table class="mainTable" id="categoriesTable">
     <script>fillTableCategoriesForUser()</script>
 </table>
+
+<!-- Modal Add New category-->
+<div id="modalAddCategory" tabindex="-1" aria-hidden="true">
+    <h5 class="modal-title" id="addNewCategoryModalLabel">Category</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <form>
+        <label for= "add_category_name" class="form-label">Name</label>
+        <input type="text" id="add_category_name">
+    </form>
+    <div class="modal-footer">
+        <button type="button" onclick="sendNewCategory()">Send</button>
+        <button type="button" data-bs-dismiss="modal">Close</button>
+    </div>
+</div>
+
 </body>
 

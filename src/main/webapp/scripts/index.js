@@ -1,5 +1,7 @@
 let user_id = getUserIdFromCookie();
 const modifyIcon = `<img class="icon" src="styles/icons/modify.png" alt ="modifyIcon"></img>`
+const buttonForAddingCategoryHTML = `<button data-bs-toggle="modal" data-bs-target="#modalAddCategory">+Add</button>`;
+
 function getUserIdFromCookie() {
     let cookies = document.cookie.split(' ');
     for (let cookie of cookies) {
@@ -39,7 +41,7 @@ function fillTableCategoriesForUser() {
     });
 }
 function createCategoriesTable(categories){
-    let tableHeaders = createHeaders("Category id","Category name","Cards","Options");
+    let tableHeaders = createHeaders("Category id","Category name","Cards",buttonForAddingCategoryHTML);
     let tableBody ='<tbody>' ;
     let userModifyButton = `<button class ="icon">${modifyIcon}</button>`;
     for(let category of categories){
@@ -53,7 +55,6 @@ function createCategoriesTable(categories){
     tableBody += '</tbody>';
     $('#categoriesTable').append(tableHeaders).append(tableBody);
 }
-
 function createHeaders(...headers){
     let resultRow = '<tr>'
     for(let header of headers){
@@ -85,4 +86,19 @@ function getCardsForCategory(categoryId){
 }
 function errorHandler(e){
     alert(`error: ${e.status} ${e.statusText}`);
+}
+function sendNewCategory(){
+    let name = $('#add_category_name').val();
+    $.ajax({
+        type: "POST",
+        url: 'categories',
+        data: {"user_id": user_id, "name": name},
+        success: [function (result) {
+            showParts();
+        }],
+        error: [function () {
+            alert("error");
+        }]
+    });
+}
 }
