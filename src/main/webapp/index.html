@@ -31,15 +31,30 @@
     }
 </style>
 <div class="modal" id="modalAddCategory">
-    <h5 class="modal-title" id="addNewCategoryModalLabel">Category</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <h4 id ="modalNameCategory"></h4>
+    <h5 class="modal-title">Category</h5>
     <form>
         <label for= "add_category_name" class="form-label">Name</label>
         <input type="text" id="add_category_name">
     </form>
     <div class="modal-footer">
-        <button type="button" id="modalSend" onclick="sendNewCategory()">Send</button>
-        <button type="button" onclick="closeModal()">Close</button>
+        <button type="button" id="modalSendCategory" onclick="sendNewCategory()">Send</button>
+        <button type="button" onclick="closeModalCategory()">Close</button>
+    </div>
+</div>
+
+<div class="modal" id="modalAddCard">
+    <h4 id ="modalNameCard"></h4>
+    <h5 class="modal-title">Category</h5>
+    <form>
+        <label for= "add_card_question" class="form-label">Question:</label>
+        <input type="text" id="add_card_question">
+        <label for= "add_card_answer" class="form-label">Answer:</label>
+        <input type="text" id="add_card_answer">
+    </form>
+    <div class="modal-footer">
+        <button type="button" id="modalSendCard" onclick="sendCard()">Send</button>
+        <button type="button" onclick="closeModalCard()">Close</button>
     </div>
 </div>
 

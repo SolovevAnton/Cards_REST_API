@@ -24,6 +24,7 @@ abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
     private final String noStrategyFoundMsg = "Cannot do get request with this params";
     @Getter
     private final String noJsonObjectProvidedMsg = "Please provide JSON object to post";
+    @Getter
     private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
     @Getter
     private final DAO<T> dao;
@@ -157,7 +158,7 @@ abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
      * @param req  to config
      * @param resp ro config
      */
-    private void configEncodingAndResponseType(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    protected void configEncodingAndResponseType(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         req.setCharacterEncoding("utf-8");
         resp.setCharacterEncoding("utf-8");
         resp.setContentType("application/json;charset=utf-8");
@@ -174,7 +175,7 @@ abstract public class AbstractServlet<T extends DTO> extends HttpServlet {
      * @param req to check
      * @return true if is json false otherwise
      */
-    private boolean isJson(HttpServletRequest req) {
+    protected boolean isJson(HttpServletRequest req) {
         String header = req.getHeader("Content-Type");
         return header != null && header.contains("application/json");
     }
