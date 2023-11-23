@@ -1,6 +1,7 @@
 let user_id = getUserIdFromCookie();
+const homeURL = "http://localhost:8080/Cards_REST_API/";
 const modifyIcon = `<img class="icon" src="styles/icons/modify.png" alt ="modifyIcon"></img>`
-const buttonForAddingCategoryHTML = `<button data-bs-toggle="modal" data-bs-target="#modalAddCategory">+Add</button>`;
+const buttonForAddingCategoryHTML = `<button onClick="document.getElementById('modalAddCategory').style.display='block'">+Add</button>`;
 
 function getUserIdFromCookie() {
     let cookies = document.cookie.split(' ');
@@ -21,6 +22,19 @@ function fillUserCard(){
         },
         error: errorHandler
     })
+}
+function getCurrentUser(){
+    let currentUser;
+  $.ajax({
+    type:'GET',
+    async: false,
+    url:`users?id=${user_id}`,
+    success: function (result){
+        currentUser =  result.data;
+    },
+    error: errorHandler
+})
+    return currentUser;
 }
 function createUserCard(user){
     $('#userId').text(user.id);
@@ -85,20 +99,18 @@ function getCardsForCategory(categoryId){
     return cards;
 }
 function errorHandler(e){
-    alert(`error: ${e.status} ${e.statusText}`);
+    alert(`error: ${e.status} ${e.statusText} ${e.responseText}`);
 }
 function sendNewCategory(){
     let name = $('#add_category_name').val();
     $.ajax({
         type: "POST",
         url: 'categories',
-        data: {"user_id": user_id, "name": name},
+        contentType : 'application/json',
+        data: JSON.stringify({"user": getCurrentUser(), "name": name}),
         success: [function (result) {
-            showParts();
+            window.location.replace(homeURL);
         }],
-        error: [function () {
-            alert("error");
-        }]
+        error:errorHandler
     });
-}
 }

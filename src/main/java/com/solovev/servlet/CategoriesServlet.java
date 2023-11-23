@@ -33,13 +33,4 @@ public class CategoriesServlet extends AbstractServlet<Category> {
         return Optional.ofNullable(chosenStrategy);
     }
 
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String userId = req.getParameter("userId");
-        if (userId != null) {
-
-        } else {
-            super.doPost(req, resp);
-        }
-    }
 }
