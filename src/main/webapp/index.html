@@ -30,7 +30,7 @@
         display: none;
     }
 </style>
-<div class="modal" id="modalAddCategory" tabindex="-1" aria-hidden="true">
+<div class="modal" id="modalAddCategory">
     <h5 class="modal-title" id="addNewCategoryModalLabel">Category</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
     <form>
@@ -38,10 +38,11 @@
         <input type="text" id="add_category_name">
     </form>
     <div class="modal-footer">
-        <button type="button" onclick="sendNewCategory()">Send</button>
-        <button type="button" data-bs-dismiss="modal">Close</button>
+        <button type="button" id="modalSend" onclick="sendNewCategory()">Send</button>
+        <button type="button" onclick="closeModal()">Close</button>
     </div>
 </div>
+
 
 </body>
 
