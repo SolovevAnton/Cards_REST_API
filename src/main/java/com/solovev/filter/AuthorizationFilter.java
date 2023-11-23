@@ -14,7 +14,7 @@ import java.util.List;
 import static java.util.Objects.nonNull;
 
 
-//@WebFilter("/*")
+@WebFilter("/*")
 public class AuthorizationFilter implements Filter {
     private HttpServletRequest request;
     private HttpServletResponse response;
