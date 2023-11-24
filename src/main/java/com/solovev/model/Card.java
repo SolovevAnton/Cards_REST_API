@@ -17,7 +17,7 @@ import java.time.LocalDate;
 @NoArgsConstructor(force = true)
 @AllArgsConstructor
 @Entity
-@Table(name = "Cards",
+@Table(name = "cards",
         uniqueConstraints = {@UniqueConstraint(columnNames = {"question", "answer", "category_id"})})
 public class Card implements DTO {
     @Id
@@ -41,5 +41,6 @@ public class Card implements DTO {
     @NonNull
     @Column(name = "creation_date",nullable = false)
     private final LocalDate creationDate = LocalDate.now();
+
 
 }

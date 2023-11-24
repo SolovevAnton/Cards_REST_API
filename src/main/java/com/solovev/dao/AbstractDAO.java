@@ -6,6 +6,7 @@ import org.hibernate.PropertyValueException;
 import org.hibernate.Session;
 import org.hibernate.TransientPropertyValueException;
 import org.hibernate.exception.ConstraintViolationException;
+import org.hibernate.exception.GenericJDBCException;
 import org.hibernate.query.Query;
 
 import javax.persistence.NoResultException;
@@ -100,7 +101,8 @@ public abstract class AbstractDAO<T extends DTO> implements DAO<T> {
             Long idInDb = sessionDecorator.beginAndCommitTransaction(add);
             elem.setId(idInDb);
             return true;
-        } catch (ConstraintViolationException | PropertyValueException | TransientPropertyValueException e) {
+        } catch (ConstraintViolationException | PropertyValueException | TransientPropertyValueException |
+                 GenericJDBCException e) {
             throw new IllegalArgumentException(e);
         }
     }

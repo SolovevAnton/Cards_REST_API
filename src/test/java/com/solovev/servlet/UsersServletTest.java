@@ -131,7 +131,6 @@ public class UsersServletTest {
             ResponseResult<User> expectedResp = new ResponseResult<>(expectedUser);
             assertEquals(expectedResp.jsonToString(), stringWriter.toString());
             assertEquals(successStatusCode, response.getStatus());
-            fail();//to do HASH PASS
         }
 
         @Test

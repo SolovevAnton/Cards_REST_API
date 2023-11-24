@@ -5,6 +5,8 @@ import com.solovev.dto.DTO;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents category for user, one user can have multiple categories
@@ -29,5 +31,11 @@ public class Category implements DTO {
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @JsonIgnore
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @OneToMany(mappedBy = "category", orphanRemoval = true, cascade = CascadeType.ALL)
+    private final List<Card> cards = new ArrayList<>();
 
 }

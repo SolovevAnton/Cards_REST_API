@@ -43,16 +43,13 @@ public class DBSetUpAndTearDown {
         SessionFactorySingleton.closeAndDeleteInstance();
         SessionFactorySingleton.getInstance(new File("D:\\Git\\Practice_Projects\\JavaEE\\Cards_REST_API\\src\\test\\java\\resources\\hibernatemysql.cfg.xml"));
 
-        Class.forName("com.mysql.cj.jdbc.Driver");
+        Class.forName("org.sqlite.JDBC");
         openConnection();
     }
 
     private void openConnection() throws SQLException {
-        String jdbcUrl = "jdbc:mysql://localhost:3306/test_db";
-        String username = "root";
-        String password = "root";
-
-        connection = DriverManager.getConnection(jdbcUrl, username, password);
+        String jdbcUrl = "jdbc:sqlite:D:\\Git\\Practice_Projects\\JavaEE\\Cards_REST_API\\src\\test\\java\\resources\\test.db";
+        connection = DriverManager.getConnection(jdbcUrl);
     }
 
     /**
