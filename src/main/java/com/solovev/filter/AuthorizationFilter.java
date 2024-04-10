@@ -1,10 +1,10 @@
 package com.solovev.filter;
 
-import com.solovev.dao.daoImplementations.UserDao;
+import com.solovev.service.UserService;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import javax.servlet.*;
-import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,12 +14,15 @@ import java.util.List;
 import static java.util.Objects.nonNull;
 
 
-@WebFilter("/*")
+//@WebFilter("/*")
+@RequiredArgsConstructor
 public class AuthorizationFilter implements Filter {
+    private final UserService userService;
     private HttpServletRequest request;
     private HttpServletResponse response;
     private String authorisationServletURI = "authentication";
     private String additionalJS ="jQuery.min.js";
+
     @Getter
     private String logInURI = "signIn.html";
     @Getter
@@ -67,7 +70,11 @@ public class AuthorizationFilter implements Filter {
         }
 
         if(nonNull(id) && nonNull(hash)){
-            isAuthorized = new UserDao().getUserByHashAndId(id,hash).isPresent();
+            try {
+                long numericId = Long.parseLong(id);
+                isAuthorized = userService.getUserByCookieHashAndId(hash,numericId).isPresent();
+            } catch (NumberFormatException ignored){
+            }
         }
         return isAuthorized;
     }

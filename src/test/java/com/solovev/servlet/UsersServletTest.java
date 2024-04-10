@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.solovev.DBSetUpAndTearDown;
 import com.solovev.DataConstants;
-import com.solovev.dao.DAO;
-import com.solovev.dao.daoImplementations.UserDao;
+import com.solovev.repository.DAO;
+import com.solovev.repository.daoImplementations.UserDao;
 import com.solovev.dto.ResponseResult;
 import com.solovev.model.User;
 import org.junit.jupiter.api.AfterEach;
@@ -20,7 +20,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
