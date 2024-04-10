@@ -25,7 +25,7 @@ public class UserController {
         return ResponseEntity.ok(new ResponseResult<>(userServiceImp.find(id)));
     }
 
-    @GetMapping
+    @GetMapping(params = {"login","password"})
     public ResponseEntity<ResponseResult<User>> getUser(@RequestParam String login, @RequestParam String password){
         String passHashed = PassHashed.hash(password);
         return ResponseEntity.ok(new ResponseResult<>(userServiceImp.find(login,passHashed)));

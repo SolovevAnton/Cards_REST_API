@@ -3,6 +3,7 @@ package com.solovev.filter;
 import com.solovev.service.UserService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.*;
 import javax.servlet.http.Cookie;
@@ -13,8 +14,7 @@ import java.util.List;
 
 import static java.util.Objects.nonNull;
 
-
-//@WebFilter("/*")
+@Component
 @RequiredArgsConstructor
 public class AuthorizationFilter implements Filter {
     private final UserService userService;
@@ -88,3 +88,4 @@ public class AuthorizationFilter implements Filter {
 
     }
 }
+
