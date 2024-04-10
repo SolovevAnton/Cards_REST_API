@@ -33,4 +33,7 @@ public class ResponseResult<T> {
         ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
         return objectMapper.writeValueAsString(this);
     }
+    public static <E> ResponseResult<E> of(E data){
+        return new ResponseResult<>(data);
+    }
 }

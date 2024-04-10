@@ -1,10 +1,11 @@
 package com.solovev.service;
 
 import com.solovev.model.User;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.Optional;
-
+@Transactional
 public interface UserService {
     Collection<User> findAll();
     User find(long id);

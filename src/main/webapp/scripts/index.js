@@ -134,7 +134,7 @@ function modifyCategory(categoryName) {
 function deleteCategory(id) {
     $.ajax({
         type: "DELETE",
-        url: `categories?id=${id}`,
+        url: `categories/${id}`,
         success: home,
         error: errorHandler
     })
@@ -153,7 +153,7 @@ function getCurrentCategory() {
     $.ajax({
         type: 'GET',
         async: false,
-        url: `categories?id=${currentCategoryId}`,
+        url: `categories/${currentCategoryId}`,
         success: function (result) {
             currentCategory = result.data;
         },
@@ -183,7 +183,7 @@ function createCardsTable(categoryId) {
 function deleteCard(id) {
     $.ajax({
         type: "DELETE",
-        url: `cards?id=${id}`,
+        url: `cards/${id}`,
         success: home,
         error: errorHandler
     })
