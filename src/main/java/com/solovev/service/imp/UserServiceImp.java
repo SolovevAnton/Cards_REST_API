@@ -27,13 +27,18 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public User find(String login, String passHash) {
-        return userRepository.findUserByLoginAndAndPassword(login,passHash);
+    public Optional<User> find(String login, String passHash) {
+        return userRepository.findUserByLoginAndPassword(login,passHash);
     }
 
     @Override
     public Optional<User> getUserByCookieHashAndId(String hash, long id) {
         return userRepository.findUserByCookieHashAndId(hash, id);
+    }
+
+    @Override
+    public void update(User user) {
+        userRepository.saveAndFlush(user);
     }
 }
 

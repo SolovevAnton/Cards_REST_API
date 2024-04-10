@@ -24,7 +24,7 @@ function getCurrentUser() {
     $.ajax({
         type: 'GET',
         async: false,
-        url: `users?id=${user_id}`,
+        url: `users/${user_id}`,
         success: function (result) {
             currentUser = result.data;
         },
