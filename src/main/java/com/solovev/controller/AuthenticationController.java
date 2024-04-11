@@ -49,20 +49,6 @@ public class AuthenticationController {
         return deleteCookieAndUserHash(foundUser);
     }
 
-    @ExceptionHandler(DataNotFoundException.class)
-    public ResponseEntity<?> handle(DataNotFoundException e) {
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(e.getMessage());
-    }
-
-    @ExceptionHandler(MyConstraintViolationException.class)
-    public ResponseEntity<?> handle(MyConstraintViolationException e) {
-        return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body(e.getMessage());
-    }
-
     private ResponseEntity<?> deleteCookieAndUserHash(User user) {
         return setCookiesAndUserHash(user,null, HttpStatus.OK);
     }

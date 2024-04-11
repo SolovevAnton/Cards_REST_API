@@ -23,7 +23,7 @@ public class UserServiceImp implements UserService {
 
     @Override
     public Optional<User> find(long id) {
-        return userRepository.findById(id); //to do refactor error
+        return userRepository.findById(id);
     }
 
     @Override
@@ -43,11 +43,9 @@ public class UserServiceImp implements UserService {
 
     @Override
     public User tryToAddUser(User toAdd) {
-        userRepository
-                .findByLogin(toAdd.getLogin())
-                .ifPresent((u) -> {
-                    throw new MyConstraintViolationException(thisLoginExists);
-                });
+        if (userRepository.existsByLogin(toAdd.getLogin())) {
+            throw new MyConstraintViolationException(thisLoginExists);
+        }
         return userRepository.save(toAdd);
     }
 }

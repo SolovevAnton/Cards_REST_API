@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static java.util.Objects.nonNull;
-
+//todo refactor filter
 @Component
 @RequiredArgsConstructor
 public class AuthorizationFilter implements Filter {

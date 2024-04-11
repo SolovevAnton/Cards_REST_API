@@ -124,9 +124,9 @@ function addCategory(categoryName) {
 function modifyCategory(categoryName) {
     $.ajax({
         type: "PUT",
-        url: 'categories',
+        url: `categories/${currentCategoryId}`,
         contentType: 'application/json',
-        data: JSON.stringify({"id": currentCategoryId, "user": currentUser, "name": categoryName}),
+        data: JSON.stringify({"user": currentUser, "name": categoryName}),
         success: home,
         error: errorHandler
     });
