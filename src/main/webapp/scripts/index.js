@@ -44,6 +44,7 @@ function fillTableCategoriesForUser() {
     $("#cardsTableBody").html("");
     $.ajax({
         type: "GET",
+        async: false,
         url: `categories?userId=${user_id}`,
         success: function (result) {
             let categories = result.data;
@@ -57,12 +58,12 @@ function getCardsForCategory(categoryId) {
     let cards;
     $.ajax({
         type: "GET",
+        async: false,
         url: `cards?categoryId=${categoryId}`,
         success: function (result) {
             cards = result.data;
         },
         error: errorHandler,
-        async: false
     });
     return cards;
 }

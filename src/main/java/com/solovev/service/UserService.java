@@ -11,5 +11,6 @@ public interface UserService {
     User find(long id);
     Optional<User> find(String login, String passHash);
     Optional<User> getUserByCookieHashAndId(String hash, long id);
+    boolean tryToAddUser(User toAdd);
     void update(User user);
 }

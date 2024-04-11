@@ -10,10 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -22,6 +19,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AuthenticationController {
     private final String notFoundMsg = "No user with this login password pair found";
+    private final String thisLoginExists = "User with this login already exists";
     private final int cookieMaxAgeMinutes = 30;
     private final UserService userService;
 
@@ -29,11 +27,20 @@ public class AuthenticationController {
     public ResponseEntity<?> checkUser(@RequestBody RequestUserInfo info) {
         String hashPass = PassHashed.hash(info.pass());
         Optional<User> foundUser = userService.find(info.login(), hashPass);
-        return foundUser.isPresent() ? setCookiesAndUserHash(foundUser.get()) :
+        return foundUser.isPresent() ? setCookiesAndUserHash(foundUser.get(), HttpStatus.OK) :
                 ResponseEntity.status(HttpStatus.NOT_FOUND).body(notFoundMsg);
     }
 
-    private ResponseEntity<?> setCookiesAndUserHash(User user) {
+    @PostMapping
+    public ResponseEntity<?> addUser(@RequestBody User user){
+        boolean isAdded = userService.tryToAddUser(user);
+        return isAdded
+                ? setCookiesAndUserHash(user, HttpStatus.CREATED)
+                : ResponseEntity.status(HttpStatus.CONFLICT).body(thisLoginExists);
+    }
+
+
+    private ResponseEntity<?> setCookiesAndUserHash(User user, HttpStatus status) {
         String hash = StringUtil.generateHash();
         setHashAndUpdateUser(user, hash);
 
@@ -41,7 +48,7 @@ public class AuthenticationController {
         ResponseCookie hashCookie = configureCookie("hash", hash);
 
         return ResponseEntity
-                .ok()
+                .status(status)
                 .header(HttpHeaders.SET_COOKIE,idCookie.toString())
                 .header(HttpHeaders.SET_COOKIE,hashCookie.toString())
                 .build();

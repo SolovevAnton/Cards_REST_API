@@ -4,6 +4,8 @@ import com.solovev.model.User;
 import com.solovev.repository.UserRepository;
 import com.solovev.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +40,16 @@ public class UserServiceImp implements UserService {
     @Override
     public void update(User user) {
         userRepository.saveAndFlush(user);
+    }
+
+    @Override
+    public boolean tryToAddUser(User toAdd) {
+        try{
+            userRepository.save(toAdd);
+            return true;
+        } catch (DataAccessException e){
+            throw new IllegalArgumentException();
+        }
     }
 }
 
