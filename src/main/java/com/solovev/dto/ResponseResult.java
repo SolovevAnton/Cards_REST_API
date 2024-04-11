@@ -17,9 +17,6 @@ public class ResponseResult<T> {
     private String message;
     private T data;
 
-    public ResponseResult(String message) {
-        this.message = message;
-    }
 
     public ResponseResult(T data) {
         this.data = data;
@@ -35,5 +32,10 @@ public class ResponseResult<T> {
     }
     public static <E> ResponseResult<E> of(E data){
         return new ResponseResult<>(data);
+    }
+    public static ResponseResult<?> message(String message){
+        ResponseResult<?> result = new ResponseResult<>();
+        result.message = message;
+        return result;
     }
 }
