@@ -1,11 +1,10 @@
 package com.solovev.controller;
 
 import com.solovev.dto.ResponseResult;
-import com.solovev.exception.DataNotFoundException;
 import com.solovev.model.User;
 import com.solovev.service.UserService;
-import com.solovev.util.PassHashed;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,28 +14,68 @@ import java.util.Collection;
 @RequiredArgsConstructor
 @RequestMapping("/users")
 public class UserController {
-    private final String userNotFoundIdMsg = "User not found with id: ";
-    private final String userNotFoundLogAndPassMsg = "No user with this login password pair found";
 
+    private final UserService userService;
 
-    private final UserService userServiceImp;
     @GetMapping
-    public ResponseEntity<ResponseResult<Collection<User>>> getAllUsers(){
-        return ResponseEntity.ok(new ResponseResult<>(userServiceImp.findAll()));
+    public ResponseEntity<ResponseResult<Collection<User>>> getAllUsers() {
+        return ResponseEntity.ok(new ResponseResult<>(null,userService.findAll()));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseResult<User>> getUser(@PathVariable long id){
-        User foundUser = userServiceImp.find(id).orElseThrow(() -> new DataNotFoundException(userNotFoundIdMsg + id));
-        return ResponseEntity.ok(new ResponseResult<>(foundUser));
+    public ResponseEntity<ResponseResult<User>> getUser(@PathVariable long id) {
+        try {
+            User foundUser = userService.find(id);
+            return ResponseEntity.ok(new ResponseResult<>(null,foundUser));
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(new ResponseResult<>(e.getMessage(), null),
+                    HttpStatus.BAD_REQUEST);
+        }
     }
 
-    @GetMapping(params = {"login","password"})
-    public ResponseEntity<ResponseResult<User>> getUser(@RequestParam String login, @RequestParam String password){
-        String passHashed = PassHashed.hash(password);
-        User foundUser = userServiceImp.find(login,passHashed).orElseThrow(() -> new DataNotFoundException(userNotFoundLogAndPassMsg));
-        return ResponseEntity.ok(new ResponseResult<>(foundUser));
+    @GetMapping(params = {"login", "password"})
+    public ResponseEntity<ResponseResult<User>> getUser(@RequestParam String login, @RequestParam String password) {
+        try {
+            User foundUser = userService.find(login, password);
+            return ResponseEntity.ok(new ResponseResult<>(null,foundUser));
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(new ResponseResult<>(e.getMessage(), null),
+                    HttpStatus.BAD_REQUEST);
+        }
     }
 
+
+    @PostMapping
+    public ResponseEntity<ResponseResult<User>> add(@RequestBody User user) {
+        try {
+            this.userService.add(user);
+            return new ResponseEntity<>(new ResponseResult<>(null, user), HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(new ResponseResult<>(e.getMessage(), null),
+                    HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<ResponseResult<User>> delete(@PathVariable long id) {
+        try {
+            User user = this.userService.deleteById(id);
+            return new ResponseEntity<>(new ResponseResult<>(null, user), HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(new ResponseResult<>(e.getMessage(), null),
+                    HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping
+    public ResponseEntity<ResponseResult<User>> put(@RequestBody User user) {
+        try {
+            User res = this.userService.update(user);
+            return new ResponseEntity<>(new ResponseResult<>(null, res), HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(new ResponseResult<>(e.getMessage(), null),
+                    HttpStatus.BAD_REQUEST);
+        }
+    }
 
 }

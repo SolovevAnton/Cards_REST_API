@@ -1,19 +1,20 @@
 package com.solovev.service.imp;
 
-import com.solovev.exception.MyConstraintViolationException;
+import com.mysql.cj.exceptions.DataConversionException;
 import com.solovev.model.User;
 import com.solovev.repository.UserRepository;
 import com.solovev.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImp implements UserService {
-    private final String thisLoginExists = "User with this login already exists";
     private final UserRepository userRepository;
 
     @Override
@@ -22,31 +23,42 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public Optional<User> find(long id) {
-        return userRepository.findById(id);
+    public User find(long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("User with this ID does not exist"));
     }
 
     @Override
-    public Optional<User> find(String login, String passHash) {
-        return userRepository.findUserByLoginAndPassword(login, passHash);
+    public User find(String login, String passHash) {
+        return userRepository
+                .findUserByLoginAndPassword(login, passHash)
+                .orElseThrow(() -> new IllegalArgumentException("User with this Login and pass"));
     }
 
     @Override
-    public Optional<User> getUserByCookieHashAndId(String hash, long id) {
-        return userRepository.findUserByCookieHashAndId(hash, id);
-    }
-
-    @Override
-    public void update(User user) {
-        userRepository.saveAndFlush(user);
-    }
-
-    @Override
-    public User tryToAddUser(User toAdd) {
-        if (userRepository.existsByLogin(toAdd.getLogin())) {
-            throw new MyConstraintViolationException(thisLoginExists);
+    public User update(User user) {
+        try {
+            return userRepository.save(user);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException("User with this login already exists");
         }
-        return userRepository.save(toAdd);
+    }
+
+    @Override
+    public User add(User toAdd) {
+        try {
+            return userRepository.save(toAdd);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException("User with this login already exists");
+        }
+    }
+
+    @Transactional
+    @Override
+    public User deleteById(long id) {
+        User foundUser = find(id);
+        userRepository.deleteById(id);
+        return foundUser;
     }
 }
 

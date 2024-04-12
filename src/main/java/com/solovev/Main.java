@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class Main {
     /*
     todo
-        1. Problem with filter but only on debug
+        2. exception handling in services and repositories. see categories repo
      */
     public static void main(String[] args) {
         SpringApplication.run(Main.class);

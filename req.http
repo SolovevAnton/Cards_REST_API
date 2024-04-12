@@ -4,4 +4,24 @@ GET http://localhost:8080/Cards_REST_API/categories
 ###
 GET http://localhost:8080/Cards_REST_API/cards
 ###
-GET http://localhost:8080/Cards_REST_API/users?id=1
+GET http://localhost:8080/Cards_REST_API/users/10
+###
+DELETE http://localhost:8080/Cards_REST_API/users/10
+###
+POST http://localhost:8080/Cards_REST_API/users
+content-type: application/json
+
+{
+  "login" : "ivan1",
+  "name" : "Ivan",
+  "password" : "Ivanov"
+}
+###
+PUT http://localhost:8080/Cards_REST_API/users
+content-type: application/json
+
+{ "id" : 3,
+  "login" : "ivan2",
+  "name" : "Ivan",
+  "password" : "Ivanov"
+}

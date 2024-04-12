@@ -3,6 +3,7 @@ package com.solovev.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,30 +13,9 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ResponseResult<T> {
     private String message;
     private T data;
-
-
-    public ResponseResult(T data) {
-        this.data = data;
-    }
-
-    /**
-     * Represents object as a Json sting
-     * @return string in Json format of this object
-     */
-    public String jsonToString() throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
-        return objectMapper.writeValueAsString(this);
-    }
-    public static <E> ResponseResult<E> of(E data){
-        return new ResponseResult<>(data);
-    }
-    public static ResponseResult<?> message(String message){
-        ResponseResult<?> result = new ResponseResult<>();
-        result.message = message;
-        return result;
-    }
 }
