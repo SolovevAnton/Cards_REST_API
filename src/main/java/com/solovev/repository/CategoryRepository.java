@@ -11,4 +11,5 @@ import java.util.Collection;
 @Repository
 public interface CategoryRepository extends JpaRepository<Category,Long> {
     Collection<Category> findCategoriesByUserId(long user_id);
+
 }

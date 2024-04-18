@@ -6,13 +6,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collection;
 import java.util.Optional;
 
-@Transactional
 public interface CategoryService {
     Collection<Category> findByUserId(long userId);
 
-    Optional<Category> findById(long id);
+    Category get(long id);
 
-    Category tryToSaveCategory(Category category);
+    Category add(long userId, Category category);
+    Category update(Category category);
 
     void deleteById(long categoryId);
 }

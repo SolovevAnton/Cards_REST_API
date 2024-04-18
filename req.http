@@ -25,3 +25,22 @@ content-type: application/json
   "name" : "Ivan",
   "password" : "Ivanov"
 }
+
+###categories
+ GET http://localhost:8080/Cards_REST_API/categories/1
+###
+POST http://localhost:8080/Cards_REST_API/categories/1
+content-type: application/json
+
+{
+  "name": "added category"
+}
+
+###
+PUT http://localhost:8080/Cards_REST_API/categories
+content-type: application/json
+
+{
+  "id" : 2,
+  "name": "added category1"
+}

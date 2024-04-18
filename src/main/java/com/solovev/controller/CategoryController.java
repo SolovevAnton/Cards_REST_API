@@ -1,42 +1,45 @@
 package com.solovev.controller;
 
+import com.solovev.dto.ResponseResult;
+import com.solovev.model.Category;
+import com.solovev.service.CategoryService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Collection;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/categories")
 public class CategoryController {
-/*    private final String categoryNotFoundIdMsg = "No category exists with id: ";
     private final CategoryService categoryService;
-
-    @GetMapping
-    public ResponseEntity<ResponseResult<Collection<Category>>> findCategoriesForUser(@RequestParam long userId){
-        return ResponseEntity.ok(new ResponseResult<>(categoryService.findByUserId(userId)));
-    }
-    @GetMapping("/{id}")
-    public ResponseEntity<ResponseResult<Category>> findCategory(@PathVariable long id){
-        Category foundCategory = categoryService.findById(id).orElseThrow(() -> new DataNotFoundException(categoryNotFoundIdMsg + id));
-        return ResponseEntity.ok(ResponseResult.of(foundCategory));
+    @GetMapping( path ="/{userId}")
+    public ResponseEntity<ResponseResult<Collection<Category>>> getAll(@PathVariable long userId){
+        return ResponseEntity.ok(new ResponseResult<>(null,categoryService.findByUserId(userId)));
     }
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public void addCategory(@RequestBody Category categoryToAdd){
-        categoryService.tryToSaveCategory(categoryToAdd);
+    @PostMapping(path = "/{userId}")
+    public ResponseEntity<ResponseResult<Category>> add(@PathVariable long userId, @RequestBody Category category) {
+        try {
+            categoryService.add(userId, category);
+            return new ResponseEntity<>(new ResponseResult<>(null, category), HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(new ResponseResult<>(e.getMessage(), null),
+                    HttpStatus.BAD_REQUEST);
+        }
     }
 
-    @PutMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public void addCategory(@PathVariable long id,@RequestBody Category categoryToAdd){
-        categoryToAdd.setId(id);
-        categoryService.tryToSaveCategory(categoryToAdd);
+    @PutMapping
+    public ResponseEntity<ResponseResult<Category>> update(@RequestBody Category category) {
+        try {
+            categoryService.update(category);
+            return new ResponseEntity<>(new ResponseResult<>(null, category), HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(new ResponseResult<>(e.getMessage(), null),
+                    HttpStatus.BAD_REQUEST);
+        }
     }
 
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public void deleteCategory(@PathVariable long id){
-        categoryService.deleteById(id);
-    }*/
 }
