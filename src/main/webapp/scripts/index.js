@@ -1,18 +1,15 @@
-let user_id = getUserIdFromCookie();
-let currentUser = getCurrentUser();
+let user_id;
+let currentUser;
 let currentCategoryId = 0;
 let currentCardId = 0;
 const homeURL = "http://localhost:8080/Cards_REST_API/";
 
 
-function getUserIdFromCookie() {
-    let cookies = document.cookie.split(' ');
-    for (let cookie of cookies) {
-        if (cookie.match("id=.+")) {
-            return cookie.split('=')[1].replace(";", "");
-        }
-    }
-    return -1;
+function getUserFromDropDown() {
+    user_id = document.getElementById("userSelect").value;
+    currentUser = getCurrentUser();
+    fillUserCard();
+    fillTableCategoriesForUser();
 }
 
 function fillUserCard() {
@@ -41,7 +38,7 @@ function createUserCard(user) {
 }
 
 function fillTableCategoriesForUser() {
-    $("#cardsTableBody").html("");
+    $('#categoriesTable').empty();
     $.ajax({
         type: "GET",
         async: false,

@@ -6,22 +6,27 @@
     <link rel="stylesheet" type="text/css" href="styles/index.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script type="text/javascript" src="scripts/index.js"></script>
-    <script type="text/javascript" src="scripts/authentication.js"></script>
 <body>
 <div>
-    <h2>You are logged as:</h2>
+    <h2>For user:</h2>
+    <!-- Add dropdown list for users -->
+    <label for="userSelect"></label><select id="userSelect">
+        <option value="1">User 1</option>
+        <option value="2">User 2</option>
+        <option value="3">User 3</option>
+        <!-- Add more options as needed -->
+    </select>
+    <!-- End of dropdown list -->
+    <button onclick="getUserFromDropDown()">Get Selected User</button>
     <ul>
         <li>UserId:<label id='userId'></label></li>
         <li>Login:<label id='userLogin'></label></li>
         <li>Name:<label id='userName'></label></li>
         <li>Registration date:<label id='userRegistrationDate'></label></li>
     </ul>
-    <script>fillUserCard()</script>
-    <button class="sign-out" id="btn-sign-out" onclick="signOut()">Sign out</button>
 </div>
 <h3>Your categories:</h3>
 <table class="mainTable" id="categoriesTable">
-    <script>fillTableCategoriesForUser()</script>
 </table>
 
 <!-- Modal Add New category-->

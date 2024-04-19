@@ -48,14 +48,16 @@ public class CategoryServiceImp implements CategoryService {
         old.setName(category.getName());
         try{
             return categoryRepository.save(old);
-        } catch (Exception e){
+        } catch (DataIntegrityViolationException e){
             throw new IllegalArgumentException(exceptionMessage(old));
         }
     }
 
     @Override
-    public void deleteById(long categoryId) {
+    public Category deleteById(long categoryId) {
+        Category toDelete = get(categoryId);
         categoryRepository.deleteById(categoryId);
+        return toDelete;
     }
 
 

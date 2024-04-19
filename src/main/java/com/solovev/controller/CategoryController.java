@@ -15,9 +15,10 @@ import java.util.Collection;
 @RequestMapping("/categories")
 public class CategoryController {
     private final CategoryService categoryService;
-    @GetMapping( path ="/{userId}")
-    public ResponseEntity<ResponseResult<Collection<Category>>> getAll(@PathVariable long userId){
-        return ResponseEntity.ok(new ResponseResult<>(null,categoryService.findByUserId(userId)));
+
+    @GetMapping(params = {"userId"})
+    public ResponseEntity<ResponseResult<Collection<Category>>> getAll(@RequestParam long userId) {
+        return ResponseEntity.ok(new ResponseResult<>(null, categoryService.findByUserId(userId)));
     }
 
     @PostMapping(path = "/{userId}")
@@ -27,7 +28,7 @@ public class CategoryController {
             return new ResponseEntity<>(new ResponseResult<>(null, category), HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(new ResponseResult<>(e.getMessage(), null),
-                    HttpStatus.BAD_REQUEST);
+                    HttpStatus.CONFLICT);
         }
     }
 
@@ -42,4 +43,13 @@ public class CategoryController {
         }
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ResponseResult<Category>> delete(@PathVariable long id) {
+        try {
+            return ResponseEntity.ok(new ResponseResult<>(null, categoryService.deleteById(id)));
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(new ResponseResult<>(e.getMessage(), null),
+                    HttpStatus.NOT_FOUND);
+        }
+    }
 }

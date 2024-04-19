@@ -19,14 +19,14 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<ResponseResult<Collection<User>>> getAllUsers() {
-        return ResponseEntity.ok(new ResponseResult<>(null,userService.findAll()));
+        return ResponseEntity.ok(new ResponseResult<>(null, userService.findAll()));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ResponseResult<User>> getUser(@PathVariable long id) {
         try {
             User foundUser = userService.find(id);
-            return ResponseEntity.ok(new ResponseResult<>(null,foundUser));
+            return ResponseEntity.ok(new ResponseResult<>(null, foundUser));
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(new ResponseResult<>(e.getMessage(), null),
                     HttpStatus.BAD_REQUEST);
@@ -37,7 +37,7 @@ public class UserController {
     public ResponseEntity<ResponseResult<User>> getUser(@RequestParam String login, @RequestParam String password) {
         try {
             User foundUser = userService.find(login, password);
-            return ResponseEntity.ok(new ResponseResult<>(null,foundUser));
+            return ResponseEntity.ok(new ResponseResult<>(null, foundUser));
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(new ResponseResult<>(e.getMessage(), null),
                     HttpStatus.BAD_REQUEST);
@@ -52,7 +52,7 @@ public class UserController {
             return new ResponseEntity<>(new ResponseResult<>(null, user), HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(new ResponseResult<>(e.getMessage(), null),
-                    HttpStatus.BAD_REQUEST);
+                    HttpStatus.CONFLICT);
         }
     }
 
@@ -63,7 +63,7 @@ public class UserController {
             return new ResponseEntity<>(new ResponseResult<>(null, user), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(new ResponseResult<>(e.getMessage(), null),
-                    HttpStatus.BAD_REQUEST);
+                    HttpStatus.NOT_FOUND);
         }
     }
 
