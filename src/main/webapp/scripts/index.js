@@ -110,10 +110,10 @@ function sendNewCategory() {
 function addCategory(categoryName) {
     $.ajax({
         type: "POST",
-        url: 'categories',
+        url: `categories/${user_id}`,
         contentType: 'application/json',
-        data: JSON.stringify({"user": currentUser, "name": categoryName}),
-        success: home,
+        data: JSON.stringify({"name": categoryName}),
+        success: fillTableCategoriesForUser,
         error: errorHandler
     });
 }
@@ -121,10 +121,10 @@ function addCategory(categoryName) {
 function modifyCategory(categoryName) {
     $.ajax({
         type: "PUT",
-        url: `categories/${currentCategoryId}`,
+        url: `categories`,
         contentType: 'application/json',
-        data: JSON.stringify({"user": currentUser, "name": categoryName}),
-        success: home,
+        data: JSON.stringify({"user": currentUser,"id" : currentCategoryId ,"name": categoryName}),
+        success: fillTableCategoriesForUser,
         error: errorHandler
     });
 }
@@ -133,7 +133,7 @@ function deleteCategory(id) {
     $.ajax({
         type: "DELETE",
         url: `categories/${id}`,
-        success: home,
+        success: fillTableCategoriesForUser,
         error: errorHandler
     })
 }

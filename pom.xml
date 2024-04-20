@@ -37,7 +37,11 @@
             <scope>test</scope>
             <version>2.5.0</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -80,24 +84,7 @@
             <artifactId>objenesis</artifactId>
             <version>3.3</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>1.15</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.12.0</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/com.password4j/password4j -->
-        <dependency>
-            <groupId>com.password4j</groupId>
-            <artifactId>password4j</artifactId>
-            <version>1.7.3</version>
-        </dependency>
+
 
     </dependencies>
     <build>

@@ -26,7 +26,8 @@ public class CategoryServiceImp implements CategoryService {
 
     @Override
     public Category get(long id) {
-        return categoryRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Category with this id wasn't found"));
+        return categoryRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Category with this id " +
+                "wasn't found"));
     }
 
     @Transactional
@@ -34,9 +35,9 @@ public class CategoryServiceImp implements CategoryService {
     public Category add(long userId, Category category) {
         User foundUser = userService.find(userId);
         category.setUser(foundUser);
-        try{
-           return categoryRepository.save(category);
-        } catch (DataIntegrityViolationException e){
+        try {
+            return categoryRepository.save(category);
+        } catch (DataIntegrityViolationException e) {
             throw new IllegalArgumentException(exceptionMessage(category));
         }
     }
@@ -45,10 +46,10 @@ public class CategoryServiceImp implements CategoryService {
     @Override
     public Category update(Category category) {
         Category old = this.get(category.getId());
-        old.setName(category.getName());
-        try{
-            return categoryRepository.save(old);
-        } catch (DataIntegrityViolationException e){
+        try {
+            old.setName(category.getName());
+            return categoryRepository.saveAndFlush(old);
+        } catch (DataIntegrityViolationException e) {
             throw new IllegalArgumentException(exceptionMessage(old));
         }
     }
