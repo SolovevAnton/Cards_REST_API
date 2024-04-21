@@ -182,7 +182,7 @@ function deleteCard(id) {
     $.ajax({
         type: "DELETE",
         url: `cards/${id}`,
-        success: home,
+        success: fillTableCategoriesForUser,
         error: errorHandler
     })
 }
@@ -217,10 +217,10 @@ function sendCard() {
 function addCard(question, answer, category) {
     $.ajax({
         type: "POST",
-        url: 'cards',
+        url: `cards/${category.id}`,
         contentType: 'application/json',
-        data: JSON.stringify({"category": category, "question": question, "answer": answer}),
-        success: home,
+        data: JSON.stringify({"question": question, "answer": answer}),
+        success: fillTableCategoriesForUser,
         error: errorHandler
     });
 }
@@ -231,7 +231,7 @@ function modifyCard(question, answer, category) {
         url: 'cards',
         contentType: 'application/json',
         data: JSON.stringify({"id": currentCardId, "category": category, "question": question, "answer": answer}),
-        success: home,
+        success: fillTableCategoriesForUser,
         error: errorHandler
     });
 }

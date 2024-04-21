@@ -16,6 +16,16 @@ import java.util.Collection;
 public class CategoryController {
     private final CategoryService categoryService;
 
+    @GetMapping({"/{categoryId}"})
+    public ResponseEntity<ResponseResult<Category>> get(@PathVariable long categoryId){
+        try{
+            return ResponseEntity.ok(new ResponseResult<>(null,categoryService.get(categoryId)));
+        } catch (IllegalArgumentException e){
+            return new ResponseEntity<>(new ResponseResult<>(e.getMessage(), null),
+                    HttpStatus.NOT_FOUND);
+        }
+    }
+
     @GetMapping(params = {"userId"})
     public ResponseEntity<ResponseResult<Collection<Category>>> getAll(@RequestParam long userId) {
         return ResponseEntity.ok(new ResponseResult<>(null, categoryService.findByUserId(userId)));

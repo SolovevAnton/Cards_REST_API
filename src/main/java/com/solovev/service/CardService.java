@@ -7,5 +7,9 @@ import java.util.Collection;
 
 @Transactional
 public interface CardService {
+    Card getById(long id);
     Collection<Card> getCardsByCategoryId(long catogoryId);
+    Card addCard(long categoryId,Card card);
+    Card deleteById(long cardId);
+    Card update(Card card);
 }
