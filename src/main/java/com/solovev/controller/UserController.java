@@ -33,8 +33,9 @@ public class UserController {
         }
     }
 
-    @GetMapping(params = {"login", "password"})
-    public ResponseEntity<ResponseResult<User>> getUser(@RequestParam String login, @RequestParam String password) {
+    @GetMapping("/search")
+    public ResponseEntity<ResponseResult<User>> getUser(@RequestParam String login,
+                                                        @RequestParam String password) {
         try {
             User foundUser = userService.find(login, password);
             return ResponseEntity.ok(new ResponseResult<>(null, foundUser));
@@ -43,7 +44,6 @@ public class UserController {
                     HttpStatus.BAD_REQUEST);
         }
     }
-
 
     @PostMapping
     public ResponseEntity<ResponseResult<User>> add(@RequestBody User user) {
@@ -77,5 +77,4 @@ public class UserController {
                     HttpStatus.BAD_REQUEST);
         }
     }
-
 }

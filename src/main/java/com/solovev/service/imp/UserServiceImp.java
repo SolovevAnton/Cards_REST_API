@@ -38,7 +38,7 @@ public class UserServiceImp implements UserService {
     @Override
     public User update(User user) {
         try {
-            return userRepository.save(user);
+            return userRepository.saveAndFlush(user);
         } catch (DataIntegrityViolationException e) {
             throw new IllegalArgumentException("User with this login already exists");
         }

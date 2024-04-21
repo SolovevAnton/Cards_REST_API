@@ -1,8 +1,13 @@
 GET http://localhost:8080/Cards_REST_API/users
 ###
+GET http://localhost:8080/Cards_REST_API/users/search?login=log1&pass=pass1
+###
 GET http://localhost:8080/Cards_REST_API/categories
 ###
 GET http://localhost:8080/Cards_REST_API/cards
+###
+GET http://localhost:8080/Cards_REST_API/cards/searchByUserId/-1
+
 ###
 GET http://localhost:8080/Cards_REST_API/users/10
 ###

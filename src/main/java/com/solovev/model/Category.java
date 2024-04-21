@@ -1,7 +1,6 @@
 package com.solovev.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.solovev.dto.DTO;
 import lombok.*;
 
 import javax.persistence.*;
@@ -18,7 +17,7 @@ import java.util.List;
 @Entity
 @Table(name = "categories",
         uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "user_id"})})
-public class Category implements DTO {
+public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

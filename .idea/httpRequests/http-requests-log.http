@@ -1,3 +1,48 @@
+GET http://localhost:8080/Cards_REST_API/cards/searchByUserId/-1
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.7)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2024-04-21T151600.200.json
+
+###
+
+GET http://localhost:8080/Cards_REST_API/cards/searchByUserId/4
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.7)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2024-04-21T151550.200.json
+
+###
+
+GET http://localhost:8080/Cards_REST_API/cards/searchByUserId/3
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.7)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2024-04-21T151544.200.json
+
+###
+
+GET http://localhost:8080/Cards_REST_API/cards/searchByUserId/2
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.7)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2024-04-21T151539.200.json
+
+###
+
+GET http://localhost:8080/Cards_REST_API/cards/searchByUserId/1
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.7)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2024-04-21T151531.200.json
+
+###
+
 PUT http://localhost:8080/Cards_REST_API/categories
 content-type: application/json
 Content-Length: 43
@@ -628,67 +673,6 @@ User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.7)
 Accept-Encoding: br,deflate,gzip,x-gzip
 
 <> 2024-04-12T114601.200.json
-
-###
-
-POST http://localhost:8080/Cards_REST_API/users
-content-type: application/json
-Content-Length: 67
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.7)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-{
-  "login" : "ivan1",
-  "name" : "Ivan",
-  "password" : "Ivanov"
-}
-
-<> 2024-04-12T114557.400.json
-
-###
-
-DELETE http://localhost:8080/Cards_REST_API/users/2
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.7)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2024-04-12T114058.400.json
-
-###
-
-DELETE http://localhost:8080/Cards_REST_API/users/4
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.7)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2024-04-12T114051.400.json
-
-###
-
-DELETE http://localhost:8080/Cards_REST_API/users/5
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.7)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2024-04-12T114045.400.json
-
-###
-
-POST http://localhost:8080/Cards_REST_API/users
-content-type: application/json
-Content-Length: 67
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.7)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-{
-  "login" : "ivan1",
-  "name" : "Ivan",
-  "password" : "Ivanov"
-}
-
-<> 2024-04-12T114037.201.json
 
 ###
 

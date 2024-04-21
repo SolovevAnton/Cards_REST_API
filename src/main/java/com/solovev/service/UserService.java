@@ -1,7 +1,6 @@
 package com.solovev.service;
 
 import com.solovev.model.User;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 

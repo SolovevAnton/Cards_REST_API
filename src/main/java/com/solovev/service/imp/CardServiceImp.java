@@ -10,7 +10,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -61,5 +60,10 @@ public class CardServiceImp implements CardService {
     private String makeErrorMessage(Card card) {
         return String.format("Card with question \"%s\" and answer \"%s\" already exists for category %s",
                 card.getQuestion(), card.getAnswer(),card.getCategory().getName());
+    }
+
+    @Override
+    public Collection<Card> getCardsByUserId(long userId) {
+        return repository.findAllByCategory_UserId(userId);
     }
 }

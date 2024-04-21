@@ -9,6 +9,7 @@ import java.util.Collection;
 public interface CardService {
     Card getById(long id);
     Collection<Card> getCardsByCategoryId(long catogoryId);
+    Collection<Card> getCardsByUserId(long userId);
     Card addCard(long categoryId,Card card);
     Card deleteById(long cardId);
     Card update(Card card);
