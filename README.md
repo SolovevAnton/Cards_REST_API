@@ -4,11 +4,9 @@ A web application for practicing REST API development.
 
 ## Stack
 - Java EE
-- Apache Tomcat
-- Servlet API
+- Spring MVC
 - MySQL Database
 - Hibernate
-- Jackson
 - Front-end using HTML and JavaScript
 
 ## Requirements
