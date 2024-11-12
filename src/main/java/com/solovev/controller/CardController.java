@@ -42,6 +42,11 @@ public class CardController {
         return ResponseEntity.ok(new ResponseResult<>(null, toDelete));
     }
 
+    @GetMapping("/args")
+    public ResponseEntity<String> argsParse(@RequestParam String arg) {
+        return ResponseEntity.ok(arg);
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ResponseResult<Card>> dbExceptionHandler(IllegalArgumentException e) {
         return new ResponseEntity<>(new ResponseResult<>(e.getMessage(), null), HttpStatus.BAD_REQUEST);
